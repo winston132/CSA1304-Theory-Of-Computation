@@ -1,0 +1,139 @@
+#include <stdio.h>
+#include <string.h>
+
+/*
+ * Experiment 19:
+ * Question: Design TM using simulator to perform addition of 'aa' and 'aaa'
+ *           (Unary Addition: 2 + 3 = 5)
+ *
+ * Turing Machine Specification:
+ *   Input: aa+aaa  (representing 2 + 3 in unary)
+ *   Tape Alphabet Γ = {a, +, B}
+ *   Goal: Compute unary sum -> aaaaa (5 in unary)
+ *
+ * TM Algorithm:
+ *   1. State q0: Scan right over 'a's until '+' is found.
+ *   2. State q1: Replace '+' with 'a', continue scanning right over 'a's.
+ *   3. State q2: When blank 'B' is encountered, move one cell Left to the last 'a'.
+ *   4. State q3: Erase the extra 'a' by writing 'B' (compensating for replacing '+' with 'a').
+ *   5. State q4: Rewind head back to the start of the tape -> Halt & ACCEPT.
+ */
+
+#define TAPE_SIZE 100
+
+char tape[TAPE_SIZE];
+int head = 10;
+int state = 0;
+
+void printTape() {
+    printf("State [q%d] Tape: ... ", state);
+    for (int i = 8; i <= 22; i++) {
+        if (i == head) printf("[%c]", tape[i]);
+        else printf(" %c ", tape[i]);
+    }
+    printf(" ...\n");
+}
+
+int main() {
+    char input[50] = "aa+aaa";
+    
+    printf("--- Turing Machine Simulator: Unary Addition ---\n");
+    printf("Default Operation: 'aa' + 'aaa' (Unary: 2 + 3)\n");
+    printf("Enter unary addition expression (press Enter for default \"aa+aaa\"): ");
+    
+    char user_input[50];
+    if (fgets(user_input, sizeof(user_input), stdin) != NULL) {
+        user_input[strcspn(user_input, "\r\n")] = '\0';
+        if (strlen(user_input) > 0) {
+            strncpy(input, user_input, sizeof(input) - 1);
+            input[sizeof(input) - 1] = '\0';
+        }
+    }
+    
+    // Initialize tape with blank symbol 'B'
+    for (int i = 0; i < TAPE_SIZE; i++) tape[i] = 'B';
+    
+    int start_pos = 10;
+    int len = strlen(input);
+    for (int i = 0; i < len; i++) {
+        tape[start_pos + i] = input[i];
+    }
+    
+    head = start_pos;
+    state = 0;
+    
+    printf("\nInitial Tape Configuration:\n");
+    printTape();
+    printf("\nExecution Steps:\n");
+    
+    int max_steps = 200;
+    int steps = 0;
+    int halted = 0;
+    
+    while (!halted && steps < max_steps) {
+        steps++;
+        char sym = tape[head];
+        
+        switch (state) {
+            case 0: // Scan right until '+'
+                if (sym == 'a') {
+                    head++;
+                } else if (sym == '+') {
+                    tape[head] = 'a'; // Replace '+' with 'a'
+                    head++;
+                    state = 1;
+                } else {
+                    halted = 1;
+                }
+                break;
+                
+            case 1: // Scan right to end of second number
+                if (sym == 'a') {
+                    head++;
+                } else if (sym == 'B') {
+                    head--; // Move back to the last 'a'
+                    state = 2;
+                }
+                break;
+                
+            case 2: // Delete the last 'a' to balance replacing '+' with 'a'
+                if (sym == 'a') {
+                    tape[head] = 'B'; // Erase extra 'a'
+                    head--;
+                    state = 3;
+                }
+                break;
+                
+            case 3: // Rewind head left to start
+                if (sym == 'a') {
+                    head--;
+                } else if (sym == 'B') {
+                    head++; // Settle on the first 'a'
+                    state = 4; // ACCEPT / HALT
+                    halted = 1;
+                }
+                break;
+                
+            default:
+                halted = 1;
+                break;
+        }
+        
+        printTape();
+    }
+    
+    // Count final 'a's on tape
+    int result_count = 0;
+    for (int i = start_pos; i < TAPE_SIZE && tape[i] == 'a'; i++) {
+        result_count++;
+    }
+    
+    printf("\n----------------------------------------------------\n");
+    printf("Addition Completed successfully!\n");
+    printf("Final Tape Content: \"");
+    for (int i = start_pos; i < start_pos + result_count; i++) printf("%c", tape[i]);
+    printf("\"\n");
+    printf("Result Value: %d in unary ('a' repeated %d times)\n", result_count, result_count);
+    
+    return 0;
+}
