@@ -1,0 +1,107 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+
+/*
+ * Experiment 9:
+ * Question: Write a C program to simulate a Non-Deterministic Finite Automata (NFA)
+ *           for the given language representing strings that start with '0' and end with '1'
+ *           over alphabet {0, 1}.
+ *
+ * NFA Formal Specification:
+ *   M = (Q, Σ, δ, q0, F)
+ *   Q = {q0, q1, q2}
+ *   Σ = {0, 1}
+ *   q0 = Start state
+ *   F = {q2} (Accepting state)
+ *
+ * Transitions:
+ *   δ(q0, '0') = {q1}
+ *   δ(q0, '1') = ∅
+ *   δ(q1, '0') = {q1}
+ *   δ(q1, '1') = {q1, q2}  <-- Non-deterministic jump to accepting state
+ *   δ(q2, '0') = ∅
+ *   δ(q2, '1') = ∅
+ */
+
+#define NUM_STATES 3
+
+void printActiveStates(bool states[NUM_STATES]) {
+    printf("{ ");
+    bool first = true;
+    for (int i = 0; i < NUM_STATES; i++) {
+        if (states[i]) {
+            if (!first) printf(", ");
+            printf("q%d", i);
+            first = false;
+        }
+    }
+    if (first) printf("∅");
+    printf(" }");
+}
+
+int main() {
+    char str[100];
+    
+    printf("--- NFA Simulator: Strings starting with '0' and ending with '1' ---\n");
+    printf("Alphabet Σ = {0, 1}\n");
+    printf("Enter binary input string: ");
+    
+    if (scanf("%99s", str) != 1) return 1;
+    
+    // Initial active state set: {q0}
+    bool current_states[NUM_STATES] = {false};
+    current_states[0] = true;
+    
+    printf("\nExecution Trace:\n");
+    printf("Initial State: ");
+    printActiveStates(current_states);
+    printf("\n");
+    
+    for (int i = 0; str[i] != '\0'; i++) {
+        char ch = str[i];
+        bool next_states[NUM_STATES] = {false};
+        
+        if (ch != '0' && ch != '1') {
+            printf("Invalid symbol '%c' encountered.\n", ch);
+            printf("\nResult: REJECTED\n");
+            return 0;
+        }
+        
+        // Transitions from q0
+        if (current_states[0]) {
+            if (ch == '0') {
+                next_states[1] = true;
+            }
+        }
+        
+        // Transitions from q1
+        if (current_states[1]) {
+            if (ch == '0') {
+                next_states[1] = true;
+            } else if (ch == '1') {
+                next_states[1] = true;
+                next_states[2] = true; // non-deterministic branch
+            }
+        }
+        
+        // Transitions from q2 (none)
+        
+        printf("After reading '%c': ", ch);
+        printActiveStates(next_states);
+        printf("\n");
+        
+        memcpy(current_states, next_states, sizeof(next_states));
+    }
+    
+    // Acceptance check
+    if (current_states[2]) {
+        printf("\nFinal Active States contain accepting state q2.\n");
+        printf("Result: ACCEPTED\n");
+    } else {
+        printf("\nFinal Active States do NOT contain accepting state q2.\n");
+        printf("Result: REJECTED\n");
+    }
+    
+    return 0;
+}
