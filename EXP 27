@@ -1,0 +1,189 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+
+/*
+ * Experiment 27:
+ * Question: Design TM using simulator to accept the input string "wcw"
+ *           (Language: L = { w c w | w in {a, b}* })
+ *
+ * Turing Machine Specification:
+ *   Alphabet Σ = {a, b, c}
+ *   Tape Alphabet Γ = {a, b, c, X, Y, B}
+ *
+ * Algorithm:
+ *   1. State q0:
+ *      - Read 'a': replace with 'X', move R -> q_match_a
+ *      - Read 'b': replace with 'X', move R -> q_match_b
+ *      - Read 'c': first half fully matched! Move R -> q_verify
+ *   2. q_match_a / q_match_b:
+ *      - Scan right skipping 'a','b' and 'c' and already-marked 'Y's
+ *      - Verify matching symbol ('a' or 'b'), replace with 'Y', move L -> q_rewind
+ *   3. q_rewind:
+ *      - Scan left skipping 'Y', 'c', 'a', 'b' back to 'X'
+ *      - Move R -> q0
+ *   4. q_verify:
+ *      - Scan right over 'Y's. If blank 'B' reached -> Halt & ACCEPT.
+ */
+
+#define TAPE_SIZE 150
+
+char tape[TAPE_SIZE];
+int head = 15;
+int state = 0;
+
+void printTape() {
+    printf("State [q%d] Tape: ... ", state);
+    for (int i = 13; i <= 32; i++) {
+        if (i == head) printf("[%c]", tape[i]);
+        else printf(" %c ", tape[i]);
+    }
+    printf(" ...\n");
+}
+
+int main() {
+    char str[100];
+    
+    printf("--- Turing Machine Simulator for L = { w c w | w in {a, b}* } ---\n");
+    printf("Examples: aca, bcab, abbcabb\n");
+    printf("Enter string: ");
+    
+    if (scanf("%99s", str) != 1) return 1;
+    
+    for (int i = 0; i < TAPE_SIZE; i++) tape[i] = 'B';
+    
+    int start_pos = 15;
+    int len = strlen(str);
+    for (int i = 0; i < len; i++) {
+        tape[start_pos + i] = str[i];
+    }
+    
+    head = start_pos;
+    state = 0;
+    
+    printf("\nExecution Tape Trace:\n");
+    printTape();
+    
+    int max_steps = 2000;
+    int step = 0;
+    bool halted = false;
+    
+    /*
+     * States:
+     *   0: Read from first w
+     *   1: Search right for 'c' and matching 'a'
+     *   2: Find first unmarked in 2nd w for 'a'
+     *   3: Search right for 'c' and matching 'b'
+     *   4: Find first unmarked in 2nd w for 'b'
+     *   5: Rewind left to 'X'
+     *   6: Verification state (scan past 'c' to 'B')
+     *   7: ACCEPT state
+     */
+    
+    while (!halted && step < max_steps) {
+        step++;
+        char sym = tape[head];
+        
+        switch (state) {
+            case 0:
+                if (sym == 'a') {
+                    tape[head] = 'X';
+                    head++;
+                    state = 1; // Looking for 'a' match after 'c'
+                } else if (sym == 'b') {
+                    tape[head] = 'X';
+                    head++;
+                    state = 3; // Looking for 'b' match after 'c'
+                } else if (sym == 'c') {
+                    head++;
+                    state = 6; // Check if second half was completely matched
+                } else {
+                    halted = true;
+                }
+                break;
+                
+            case 1: // Moving right towards 'c'
+                if (sym == 'a' || sym == 'b') {
+                    head++;
+                } else if (sym == 'c') {
+                    head++;
+                    state = 2; // Cross into second w
+                } else {
+                    halted = true;
+                }
+                break;
+                
+            case 2: // Find first unmarked in second w, expect 'a'
+                if (sym == 'Y') {
+                    head++;
+                } else if (sym == 'a') {
+                    tape[head] = 'Y';
+                    head--;
+                    state = 5; // Rewind
+                } else {
+                    halted = true; // Mismatch
+                }
+                break;
+                
+            case 3: // Moving right towards 'c'
+                if (sym == 'a' || sym == 'b') {
+                    head++;
+                } else if (sym == 'c') {
+                    head++;
+                    state = 4;
+                } else {
+                    halted = true;
+                }
+                break;
+                
+            case 4: // Find first unmarked in second w, expect 'b'
+                if (sym == 'Y') {
+                    head++;
+                } else if (sym == 'b') {
+                    tape[head] = 'Y';
+                    head--;
+                    state = 5;
+                } else {
+                    halted = true; // Mismatch
+                }
+                break;
+                
+            case 5: // Rewind left back to 'X'
+                if (sym == 'Y' || sym == 'c' || sym == 'a' || sym == 'b') {
+                    head--;
+                } else if (sym == 'X') {
+                    head++;
+                    state = 0; // Next character
+                } else {
+                    halted = true;
+                }
+                break;
+                
+            case 6: // Verify only 'Y' remains until 'B'
+                if (sym == 'Y') {
+                    head++;
+                } else if (sym == 'B') {
+                    state = 7; // ACCEPT!
+                    halted = true;
+                } else {
+                    halted = true;
+                }
+                break;
+                
+            default:
+                halted = true;
+                break;
+        }
+        
+        printTape();
+    }
+    
+    printf("\n----------------------------------------------------\n");
+    if (state == 7) {
+        printf("Result: String \"%s\" is ACCEPTED (Valid wcw pattern)!\n", str);
+    } else {
+        printf("Result: String \"%s\" is REJECTED (Does not match wcw)!\n", str);
+    }
+    
+    return 0;
+}
