@@ -1,0 +1,144 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+
+/*
+ * Experiment 16:
+ * Question: Design TM using simulator to accept the input string a^n b^(2n)
+ *
+ * Turing Machine Specification:
+ *   Alphabet Σ = {a, b}
+ *   Tape Alphabet Γ = {a, b, X, Y, B}
+ *   States:
+ *     q0: Start state, marks 'a' with 'X'
+ *     q1: Scan right to find first 'b', mark with 'Y'
+ *     q2: Scan right to find second 'b', mark with 'Y'
+ *     q3: Scan left back to the last 'X'
+ *     q4: Verification state (ensure only 'Y's remain until blank 'B')
+ *     q5: Halt & Accept state
+ */
+
+#define TAPE_SIZE 200
+
+char tape[TAPE_SIZE];
+int head = 20;
+int state = 0;
+
+void printTape() {
+    printf("State [q%d] Tape: ... ", state);
+    int start = 18;
+    int end = 38;
+    for (int i = start; i <= end; i++) {
+        if (i == head) printf("[%c]", tape[i]);
+        else printf(" %c ", tape[i]);
+    }
+    printf(" ...\n");
+}
+
+int main() {
+    char str[100];
+    
+    printf("--- Turing Machine Simulator for L = { a^n b^(2n) | n >= 1 } ---\n");
+    printf("Enter input string (e.g., abb, aabbbb): ");
+    
+    if (scanf("%99s", str) != 1) return 1;
+    
+    for (int i = 0; i < TAPE_SIZE; i++) tape[i] = 'B';
+    
+    int input_start = 20;
+    int len = strlen(str);
+    for (int i = 0; i < len; i++) {
+        tape[input_start + i] = str[i];
+    }
+    
+    head = input_start;
+    state = 0;
+    
+    printf("\nExecution Tape Trace:\n");
+    printTape();
+    
+    int max_steps = 2000;
+    int step = 0;
+    bool halted = false;
+    
+    while (!halted && step < max_steps) {
+        step++;
+        char sym = tape[head];
+        
+        switch (state) {
+            case 0:
+                if (sym == 'a') {
+                    tape[head] = 'X';
+                    head++;
+                    state = 1;
+                } else if (sym == 'Y') {
+                    head++;
+                    state = 4; // Check if remaining are all Y
+                } else {
+                    halted = true;
+                }
+                break;
+                
+            case 1: // Looking for 1st 'b'
+                if (sym == 'a' || sym == 'Y') {
+                    head++;
+                } else if (sym == 'b') {
+                    tape[head] = 'Y';
+                    head++;
+                    state = 2; // Look for 2nd 'b'
+                } else {
+                    halted = true;
+                }
+                break;
+                
+            case 2: // Looking for 2nd 'b'
+                if (sym == 'Y') {
+                    head++;
+                } else if (sym == 'b') {
+                    tape[head] = 'Y';
+                    head--;
+                    state = 3; // Rewind back to 'X'
+                } else {
+                    halted = true;
+                }
+                break;
+                
+            case 3: // Rewind left
+                if (sym == 'a' || sym == 'Y') {
+                    head--;
+                } else if (sym == 'X') {
+                    head++;
+                    state = 0;
+                } else {
+                    halted = true;
+                }
+                break;
+                
+            case 4: // Verifying only Y's remain
+                if (sym == 'Y') {
+                    head++;
+                } else if (sym == 'B') {
+                    state = 5; // ACCEPT
+                    halted = true;
+                } else {
+                    halted = true;
+                }
+                break;
+                
+            default:
+                halted = true;
+                break;
+        }
+        
+        printTape();
+    }
+    
+    printf("\n----------------------------------------------------\n");
+    if (state == 5) {
+        printf("Result: String \"%s\" is ACCEPTED by the Turing Machine!\n", str);
+    } else {
+        printf("Result: String \"%s\" is REJECTED by the Turing Machine!\n", str);
+    }
+    
+    return 0;
+}
