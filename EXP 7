@@ -1,0 +1,62 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+
+/*
+ * Experiment 7:
+ * Question: Write a C program to check whether a given string belongs to the language
+ *           defined by the Context Free Grammar (CFG):
+ *           S -> A101A
+ *           A -> 0A | 1A | ε
+ *
+ * Language Analysis:
+ * - Non-terminal A generates any binary string: (0 + 1)*
+ * - Production S -> A 1 0 1 A generates any binary string containing "101" as a substring.
+ * - Minimum length string is "101" (when both A derive ε).
+ */
+
+bool checkCFG7(const char *str, int *out_pos) {
+    int len = strlen(str);
+    
+    // Check all characters are valid binary digits
+    for (int i = 0; i < len; i++) {
+        if (str[i] != '0' && str[i] != '1') {
+            return false;
+        }
+    }
+    
+    // Find substring "101"
+    char *pos = strstr(str, "101");
+    if (pos != NULL) {
+        *out_pos = (int)(pos - str);
+        return true;
+    }
+    
+    return false;
+}
+
+int main() {
+    char str[100];
+    
+    printf("--- CFG Parser: S -> A101A, A -> 0A | 1A | epsilon ---\n");
+    printf("Language: All binary strings containing '101' as a substring\n");
+    printf("Enter a binary string: ");
+    
+    if (scanf("%99s", str) != 1) return 1;
+    
+    int pos = -1;
+    bool accepted = checkCFG7(str, &pos);
+    
+    if (accepted) {
+        printf("\nDerivation Details:\n");
+        printf("  Found mandatory substring '101' at index %d\n", pos);
+        printf("  Prefix derived from first A : \"%.*s\"\n", pos, str);
+        printf("  Center match (101)          : \"101\"\n");
+        printf("  Suffix derived from second A: \"%s\"\n", str + pos + 3);
+        printf("\nResult: String \"%s\" is ACCEPTED (belongs to CFG language)\n", str);
+    } else {
+        printf("\nResult: String \"%s\" is REJECTED (does not contain substring '101')\n", str);
+    }
+    
+    return 0;
+}
