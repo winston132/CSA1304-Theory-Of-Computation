@@ -1,0 +1,83 @@
+#include <stdio.h>
+#include <stdbool.h>
+#include <string.h>
+
+/*
+ * Experiment 11:
+ * Question: Write a C program to find ε-closure for all the states in a
+ *           Non-Deterministic Finite Automata (NFA) with ε-moves.
+ *
+ * Method:
+ *   Transitive Closure / Warshall's Algorithm on ε-reachability matrix.
+ *   - Initial matrix: Reach[i][i] = 1 (reflexive: state can reach itself on ε)
+ *   - For each ε-transition u -> v, Reach[u][v] = 1
+ *   - For intermediate state k: Reach[i][j] = Reach[i][j] || (Reach[i][k] && Reach[k][j])
+ */
+
+#define MAX_STATES 10
+
+int main() {
+    int num_states = 4;
+    int reach[MAX_STATES][MAX_STATES];
+    
+    printf("--- ε-Closure Computation Using Transitive Closure (Warshall's Method) ---\n");
+    printf("Demonstration on standard NFA-ε with states {q0, q1, q2, q3}:\n");
+    printf("  ε-Transitions:\n");
+    printf("    q0 --ε--> q1\n");
+    printf("    q1 --ε--> q2\n");
+    printf("    q2 --ε--> q3\n\n");
+    
+    // Initialize reachability matrix
+    memset(reach, 0, sizeof(reach));
+    
+    // Reflexive property: every state can reach itself via ε-moves (length 0 path)
+    for (int i = 0; i < num_states; i++) {
+        reach[i][i] = 1;
+    }
+    
+    // Pre-defined ε-transitions
+    reach[0][1] = 1; // q0 -> q1
+    reach[1][2] = 1; // q1 -> q2
+    reach[2][3] = 1; // q2 -> q3
+    
+    // Warshall's algorithm for transitive closure
+    for (int k = 0; k < num_states; k++) {
+        for (int i = 0; i < num_states; i++) {
+            for (int j = 0; j < num_states; j++) {
+                reach[i][j] = reach[i][j] || (reach[i][k] && reach[k][j]);
+            }
+        }
+    }
+    
+    printf("Transition Matrix with ε-reachability:\n");
+    printf("State\t");
+    for (int j = 0; j < num_states; j++) printf("q%d\t", j);
+    printf("\n");
+    
+    for (int i = 0; i < num_states; i++) {
+        printf("q%d\t", i);
+        for (int j = 0; j < num_states; j++) {
+            printf("%d\t", reach[i][j]);
+        }
+        printf("\n");
+    }
+    
+    printf("\n----------------------------------------\n");
+    printf("Derived ε-Closure Sets:\n");
+    printf("----------------------------------------\n");
+    for (int i = 0; i < num_states; i++) {
+        printf("ε-closure(q%d) = { ", i);
+        bool first = true;
+        for (int j = 0; j < num_states; j++) {
+            if (reach[i][j]) {
+                if (!first) printf(", ");
+                printf("q%d", j);
+                first = false;
+            }
+        }
+        printf(" }\n");
+    }
+    printf("----------------------------------------\n");
+    
+    return 0;
+}
