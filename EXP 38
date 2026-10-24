@@ -1,0 +1,109 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+
+/*
+ * Experiment 38:
+ * Question: Design NFA using simulator to accept the input strings "bbc", "c", and "bcaaa"
+ *           over alphabet {a, b, c}.
+ *
+ * Finite Language: L = { "c", "bbc", "bcaaa" }
+ *
+ * NFA Architecture:
+ *   q0: Start state
+ *       δ(q0, 'c') = {q1}           [Path for "c"]
+ *       δ(q0, 'b') = {q2, q4}       [Non-deterministic fork for "bbc" and "bcaaa"]
+ *
+ *   Branch "bbc":
+ *       δ(q2, 'b') = {q3}
+ *       δ(q3, 'c') = {q8} (ACCEPT)
+ *
+ *   Branch "bcaaa":
+ *       δ(q4, 'c') = {q5}
+ *       δ(q5, 'a') = {q6}
+ *       δ(q6, 'a') = {q7}
+ *       δ(q7, 'a') = {q9} (ACCEPT)
+ *
+ *   Accepting States F = {q1, q8, q9}
+ */
+
+#define NUM_STATES 10
+
+void printActiveSet38(bool states[NUM_STATES]) {
+    printf("{ ");
+    bool first = true;
+    for (int i = 0; i < NUM_STATES; i++) {
+        if (states[i]) {
+            if (!first) printf(", ");
+            printf("q%d", i);
+            first = false;
+        }
+    }
+    if (first) printf("∅");
+    printf(" }");
+}
+
+int main() {
+    char str[100];
+    
+    printf("--- NFA Simulator for L = {\"c\", \"bbc\", \"bcaaa\"} ---\n");
+    printf("Alphabet: {a, b, c}\n");
+    printf("Enter string: ");
+    
+    if (scanf("%99s", str) != 1) return 1;
+    
+    bool current[NUM_STATES] = {false};
+    current[0] = true; // Start in q0
+    
+    printf("\nExecution Trace:\n");
+    printf("  Initial Active States: ");
+    printActiveSet38(current);
+    printf("\n");
+    
+    for (int i = 0; str[i] != '\0'; i++) {
+        char ch = str[i];
+        bool next[NUM_STATES] = {false};
+        
+        if (ch != 'a' && ch != 'b' && ch != 'c') {
+            printf("  Invalid symbol '%c' encountered.\n", ch);
+            break;
+        }
+        
+        // Transitions from q0
+        if (current[0]) {
+            if (ch == 'c') next[1] = true;
+            if (ch == 'b') {
+                next[2] = true; // Branch towards "bbc"
+                next[4] = true; // Branch towards "bcaaa"
+            }
+        }
+        
+        // Branch "bbc"
+        if (current[2] && ch == 'b') next[3] = true;
+        if (current[3] && ch == 'c') next[8] = true; // Accept "bbc"
+        
+        // Branch "bcaaa"
+        if (current[4] && ch == 'c') next[5] = true;
+        if (current[5] && ch == 'a') next[6] = true;
+        if (current[6] && ch == 'a') next[7] = true;
+        if (current[7] && ch == 'a') next[9] = true; // Accept "bcaaa"
+        
+        printf("  Read '%c': Active states -> ", ch);
+        printActiveSet38(next);
+        printf("\n");
+        
+        memcpy(current, next, sizeof(next));
+    }
+    
+    printf("\nFinal Active States: ");
+    printActiveSet38(current);
+    printf("\n");
+    
+    if (current[1] || current[8] || current[9]) {
+        printf("Result: String \"%s\" is ACCEPTED by the NFA!\n", str);
+    } else {
+        printf("Result: String \"%s\" is REJECTED by the NFA!\n", str);
+    }
+    
+    return 0;
+}
