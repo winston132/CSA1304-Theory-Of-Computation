@@ -1,0 +1,70 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+
+/*
+ * Experiment 6:
+ * Question: Write a C program to check whether a given string belongs to the language
+ *           defined by the Context Free Grammar (CFG):
+ *           S -> 0S1 | ε
+ *
+ * Language Analysis:
+ * - Each recursive step S -> 0S1 adds one '0' on the left and one '1' on the right.
+ * - Base step S -> ε terminates the derivation.
+ * - Language generated: L = { 0^n 1^n | n >= 0 }
+ */
+
+bool checkCFG6(const char *str, int *out_n) {
+    int len = strlen(str);
+    
+    // Epsilon / empty string is accepted (n = 0)
+    if (len == 0) {
+        *out_n = 0;
+        return true;
+    }
+    
+    // Length must be even
+    if (len % 2 != 0) {
+        return false;
+    }
+    
+    int n = len / 2;
+    for (int i = 0; i < n; i++) {
+        if (str[i] != '0') return false;
+    }
+    for (int i = n; i < len; i++) {
+        if (str[i] != '1') return false;
+    }
+    
+    *out_n = n;
+    return true;
+}
+
+int main() {
+    char str[100];
+    
+    printf("--- CFG Parser: S -> 0S1 | epsilon ---\n");
+    printf("Language: L = { 0^n 1^n | n >= 0 }\n");
+    printf("Enter a binary string (or 'E' for epsilon): ");
+    
+    if (scanf("%99s", str) != 1) return 1;
+    if (strcmp(str, "E") == 0 || strcmp(str, "e") == 0) str[0] = '\0';
+    
+    int n = 0;
+    bool accepted = checkCFG6(str, &n);
+    
+    if (accepted) {
+        printf("\nDerivation Details:\n");
+        printf("  Total length = %zu\n", strlen(str));
+        printf("  Number of 0's (n) = %d\n", n);
+        printf("  Number of 1's (n) = %d\n", n);
+        printf("  Derivation: S");
+        for (int i = 0; i < n; i++) printf(" -> 0S1");
+        printf(" -> 0^%d 1^%d\n", n, n);
+        printf("\nResult: String \"%s\" is ACCEPTED (belongs to CFG language)\n", str);
+    } else {
+        printf("\nResult: String \"%s\" is REJECTED (does not belong to CFG language)\n", str);
+    }
+    
+    return 0;
+}
