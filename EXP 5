@@ -1,0 +1,83 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+
+/*
+ * Experiment 5:
+ * Question: Write a C program to check whether a given string belongs to the language
+ *           defined by the Context Free Grammar (CFG):
+ *           S -> 0S0 | A
+ *           A -> 1A | ε
+ *
+ * Language Analysis:
+ * - S -> 0S0 repeatedly wraps with an equal number of 0's on left and right.
+ * - S -> A replaces S with any number of 1's (including 0 ones) derived from A -> 1A | ε.
+ * - Language generated: L = { 0^n 1^m 0^n | n >= 0, m >= 0 }
+ */
+
+bool checkCFG5(const char *str, int *out_n, int *out_m) {
+    int len = strlen(str);
+    int i = 0;
+    
+    // Count leading zeros (n)
+    int leading_zeros = 0;
+    while (i < len && str[i] == '0') {
+        leading_zeros++;
+        i++;
+    }
+    
+    // Count middle ones (m)
+    int middle_ones = 0;
+    while (i < len && str[i] == '1') {
+        middle_ones++;
+        i++;
+    }
+    
+    // Count trailing zeros (must also equal n)
+    int trailing_zeros = 0;
+    while (i < len && str[i] == '0') {
+        trailing_zeros++;
+        i++;
+    }
+    
+    // If any characters remain or invalid chars present
+    if (i != len) {
+        return false;
+    }
+    
+    // Check condition: leading zeros == trailing zeros
+    if (leading_zeros == trailing_zeros) {
+        *out_n = leading_zeros;
+        *out_m = middle_ones;
+        return true;
+    }
+    
+    return false;
+}
+
+int main() {
+    char str[100];
+    
+    printf("--- CFG Parser: S -> 0S0 | A, A -> 1A | epsilon ---\n");
+    printf("Language: L = { 0^n 1^m 0^n | n >= 0, m >= 0 }\n");
+    printf("Enter a binary string (or 'E' for epsilon): ");
+    
+    if (scanf("%99s", str) != 1) return 1;
+    if (strcmp(str, "E") == 0 || strcmp(str, "e") == 0) str[0] = '\0';
+    
+    int n = 0, m = 0;
+    bool accepted = checkCFG5(str, &n, &m);
+    
+    if (accepted) {
+        printf("\nDerivation Details:\n");
+        printf("  Leading zeros (n)  = %d\n", n);
+        printf("  Middle ones   (m)  = %d\n", m);
+        printf("  Trailing zeros (n) = %d\n", n);
+        printf("  Form: 0^%d 1^%d 0^%d\n", n, m, n);
+        printf("\nResult: String \"%s\" is ACCEPTED (belongs to CFG language)\n", str);
+    } else {
+        printf("\nResult: String \"%s\" is REJECTED (does not belong to CFG language)\n", str);
+    }
+    
+    return 0;
+}
