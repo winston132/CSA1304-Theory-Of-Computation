@@ -1,0 +1,123 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+
+/*
+ * Experiment 37:
+ * Question: Design NFA using simulator to accept strings that start and end with different
+ *           symbols over the input {a, b}.
+ *
+ * Language Specification:
+ *   L = { a (a + b)* b } U { b (a + b)* a }
+ *   (Strings starting with 'a' and ending with 'b', OR starting with 'b' and ending with 'a')
+ *
+ * NFA Formal Specification:
+ *   Q = {q0, q1, q2, q3, q4}
+ *   Σ = {a, b}
+ *   q0 = Start state
+ *   F = {q2, q4} (Accepting states)
+ *
+ * Transitions:
+ *   From q0:
+ *     δ(q0, 'a') = {q1}      [Branch 1: starts with 'a']
+ *     δ(q0, 'b') = {q3}      [Branch 2: starts with 'b']
+ *   Branch 1 (starts with 'a', seeking end 'b'):
+ *     δ(q1, 'a') = {q1}
+ *     δ(q1, 'b') = {q1, q2}  [q2 is accepting]
+ *   Branch 2 (starts with 'b', seeking end 'a'):
+ *     δ(q3, 'b') = {q3}
+ *     δ(q3, 'a') = {q3, q4}  [q4 is accepting]
+ */
+
+#define NUM_STATES 5
+
+void printActiveSet37(bool states[NUM_STATES]) {
+    printf("{ ");
+    bool first = true;
+    for (int i = 0; i < NUM_STATES; i++) {
+        if (states[i]) {
+            if (!first) printf(", ");
+            printf("q%d", i);
+            first = false;
+        }
+    }
+    if (first) printf("∅");
+    printf(" }");
+}
+
+int main() {
+    char str[100];
+    
+    printf("--- NFA Simulator: Strings Starting and Ending with Different Symbols ---\n");
+    printf("Alphabet: {a, b}\n");
+    printf("Language: a(a+b)*b U b(a+b)*a\n");
+    printf("Enter string over {a, b}: ");
+    
+    if (scanf("%99s", str) != 1) return 1;
+    
+    bool current[NUM_STATES] = {false};
+    current[0] = true;
+    
+    printf("\nExecution Trace:\n");
+    printf("  Initial Active States: ");
+    printActiveSet37(current);
+    printf("\n");
+    
+    for (int i = 0; str[i] != '\0'; i++) {
+        char ch = str[i];
+        bool next[NUM_STATES] = {false};
+        
+        if (ch != 'a' && ch != 'b') {
+            printf("  Invalid symbol '%c' encountered.\n", ch);
+            break;
+        }
+        
+        // From q0
+        if (current[0]) {
+            if (ch == 'a') next[1] = true;
+            else if (ch == 'b') next[3] = true;
+        }
+        
+        // Branch 1 (from q1)
+        if (current[1]) {
+            if (ch == 'a') {
+                next[1] = true;
+            } else if (ch == 'b') {
+                next[1] = true;
+                next[2] = true; // jump to accept state q2
+            }
+        }
+        
+        // Branch 2 (from q3)
+        if (current[3]) {
+            if (ch == 'b') {
+                next[3] = true;
+            } else if (ch == 'a') {
+                next[3] = true;
+                next[4] = true; // jump to accept state q4
+            }
+        }
+        
+        // q2 and q4 are target end states without outgoing transitions in non-deterministic matching
+        
+        printf("  Read '%c': Active states -> ", ch);
+        printActiveSet37(next);
+        printf("\n");
+        
+        memcpy(current, next, sizeof(next));
+    }
+    
+    printf("\nFinal Active States: ");
+    printActiveSet37(current);
+    printf("\n");
+    
+    // Check if either q2 or q4 is active
+    if (current[2] || current[4]) {
+        printf("Result: String \"%s\" is ACCEPTED (Starts with '%c' and ends with '%c')\n",
+               str, str[0], str[strlen(str) - 1]);
+    } else {
+        printf("Result: String \"%s\" is REJECTED\n", str);
+    }
+    
+    return 0;
+}
