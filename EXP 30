@@ -1,0 +1,63 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+
+/*
+ * Experiment 30:
+ * Question: Design NFA to accept any number of a's where input = {a, b}.
+ *           (Language: L = a* = { ε, a, aa, aaa, aaaa, ... })
+ *
+ * NFA Formal Specification:
+ *   Alphabet Σ = {a, b}
+ *   Q = {q0}
+ *   q0 = Start state & ACCEPTING STATE
+ *
+ * Transitions:
+ *   δ(q0, 'a') = {q0}
+ *   δ(q0, 'b') = ∅   (No transition on 'b', causing execution path to die)
+ */
+
+int main() {
+    char str[100];
+    
+    printf("--- NFA Simulator: Accept Any Number of 'a's (L = a*) ---\n");
+    printf("Alphabet: {a, b}\n");
+    printf("Enter string over {a, b} (or 'E' for epsilon/empty string): ");
+    
+    if (scanf("%99s", str) != 1) return 1;
+    if (strcmp(str, "E") == 0 || strcmp(str, "e") == 0) str[0] = '\0';
+    
+    bool active = true; // State q0 is active
+    
+    printf("\nExecution Trace:\n");
+    printf("  Initial Active State: { q0 } (q0 is ACCEPTING)\n");
+    
+    for (int i = 0; str[i] != '\0'; i++) {
+        char ch = str[i];
+        
+        if (!active) {
+            printf("  Read '%c': Active states = ∅\n", ch);
+            continue;
+        }
+        
+        if (ch == 'a') {
+            printf("  Read 'a': δ({q0}, 'a') -> { q0 }\n");
+            active = true;
+        } else if (ch == 'b') {
+            printf("  Read 'b': δ({q0}, 'b') -> ∅ (No transition defined for 'b')\n");
+            active = false;
+        } else {
+            printf("  Read '%c': Invalid symbol -> ∅\n", ch);
+            active = false;
+        }
+    }
+    
+    printf("\nFinal Active State Set: %s\n", active ? "{ q0 }" : "∅");
+    if (active) {
+        printf("Result: String \"%s\" is ACCEPTED (Valid string in a*)\n", str);
+    } else {
+        printf("Result: String \"%s\" is REJECTED (Contains 'b' or invalid symbol)\n", str);
+    }
+    
+    return 0;
+}
