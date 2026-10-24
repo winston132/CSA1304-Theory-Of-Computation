@@ -1,0 +1,165 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+
+/*
+ * Experiment 26:
+ * Question: Design TM using simulator to accept the input string Palindrome "bbabb"
+ *
+ * Turing Machine Specification:
+ *   Alphabet Σ = {a, b}
+ *   Tape Alphabet Γ = {a, b, B}
+ *   Language: Binary Palindromes { w | w = w^R }
+ *   Target Test String: "bbabb"
+ *
+ * State Logic:
+ *   q0: Read leftmost symbol:
+ *       - 'b' -> replace with 'B', goto q_b (scan right for matching 'b')
+ *       - 'a' -> replace with 'B', goto q_a (scan right for matching 'a')
+ *       - 'B' -> goto q_accept
+ *   q_b: Scan right until 'B', step left, check if 'b'. Replace with 'B', rewind left.
+ *   q_a: Scan right until 'B', step left, check if 'a'. Replace with 'B', rewind left.
+ *   q_rewind: Move left until 'B', step right -> q0.
+ */
+
+#define TAPE_SIZE 100
+
+char tape[TAPE_SIZE];
+int head = 15;
+int state = 0;
+
+void printTape() {
+    printf("State [q%d] Tape: ... ", state);
+    for (int i = 13; i <= 25; i++) {
+        if (i == head) printf("[%c]", tape[i]);
+        else printf(" %c ", tape[i]);
+    }
+    printf(" ...\n");
+}
+
+int main() {
+    char str[100] = "bbabb";
+    
+    printf("--- Turing Machine Simulator: Palindrome Acceptance ---\n");
+    printf("Target Test String: \"bbabb\"\n");
+    printf("Enter string over {a, b} (press Enter for default \"bbabb\"): ");
+    
+    char user_input[100];
+    if (fgets(user_input, sizeof(user_input), stdin) != NULL) {
+        user_input[strcspn(user_input, "\r\n")] = '\0';
+        if (strlen(user_input) > 0) {
+            strncpy(str, user_input, sizeof(str) - 1);
+            str[sizeof(str) - 1] = '\0';
+        }
+    }
+    
+    for (int i = 0; i < TAPE_SIZE; i++) tape[i] = 'B';
+    
+    int start_pos = 15;
+    int len = strlen(str);
+    for (int i = 0; i < len; i++) {
+        tape[start_pos + i] = str[i];
+    }
+    
+    head = start_pos;
+    state = 0;
+    
+    printf("\nExecution Tape Trace for Palindrome \"%s\":\n", str);
+    printTape();
+    
+    int max_steps = 1000;
+    int step = 0;
+    bool halted = false;
+    
+    while (!halted && step < max_steps) {
+        step++;
+        char sym = tape[head];
+        
+        switch (state) {
+            case 0:
+                if (sym == 'b') {
+                    tape[head] = 'B';
+                    head++;
+                    state = 1; // Scan right for matching 'b'
+                } else if (sym == 'a') {
+                    tape[head] = 'B';
+                    head++;
+                    state = 3; // Scan right for matching 'a'
+                } else if (sym == 'B') {
+                    state = 6; // Accept
+                    halted = true;
+                } else {
+                    halted = true;
+                }
+                break;
+                
+            case 1: // Move right for 'b'
+                if (sym == 'a' || sym == 'b') {
+                    head++;
+                } else if (sym == 'B') {
+                    head--;
+                    state = 2; // Verify matching 'b'
+                }
+                break;
+                
+            case 2:
+                if (sym == 'b') {
+                    tape[head] = 'B';
+                    head--;
+                    state = 5; // Rewind
+                } else if (sym == 'B') {
+                    state = 6; // Center odd symbol reached -> Accept
+                    halted = true;
+                } else {
+                    halted = true;
+                }
+                break;
+                
+            case 3: // Move right for 'a'
+                if (sym == 'a' || sym == 'b') {
+                    head++;
+                } else if (sym == 'B') {
+                    head--;
+                    state = 4; // Verify matching 'a'
+                }
+                break;
+                
+            case 4:
+                if (sym == 'a') {
+                    tape[head] = 'B';
+                    head--;
+                    state = 5; // Rewind
+                } else if (sym == 'B') {
+                    state = 6; // Center odd symbol reached -> Accept
+                    halted = true;
+                } else {
+                    halted = true;
+                }
+                break;
+                
+            case 5: // Rewind left
+                if (sym == 'a' || sym == 'b') {
+                    head--;
+                } else if (sym == 'B') {
+                    head++;
+                    state = 0;
+                }
+                break;
+                
+            default:
+                halted = true;
+                break;
+        }
+        
+        printTape();
+    }
+    
+    printf("\n----------------------------------------------------\n");
+    if (state == 6) {
+        printf("Result: String \"%s\" is ACCEPTED (Valid Palindrome)!\n", str);
+    } else {
+        printf("Result: String \"%s\" is REJECTED (Not a Palindrome)!\n", str);
+    }
+    
+    return 0;
+}
