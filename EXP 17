@@ -1,0 +1,174 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+
+/*
+ * Experiment 17:
+ * Question: Design TM using simulator to accept the input string Palindrome "ababa"
+ *
+ * Turing Machine Specification:
+ *   Alphabet Σ = {a, b}
+ *   Tape Alphabet Γ = {a, b, B}
+ *   Language: Binary Palindromes { w | w = w^R }
+ *
+ * Strategy (Outside-in reduction):
+ *   1. Read leftmost symbol in state q0, replace with 'B', remember symbol:
+ *      - If 'a' -> state q_a
+ *      - If 'b' -> state q_b
+ *      - If 'B' -> All symbols matched, accept!
+ *   2. Scan right until the first blank 'B', then move one step left.
+ *   3. Check rightmost symbol:
+ *      - If it matches remembered symbol, replace with 'B' and rewind left to 'B'.
+ *      - If blank 'B' is encountered immediately, string had odd length and middle was reached -> accept!
+ *      - If mismatch, halt and reject.
+ *   4. Repeat from step 1.
+ */
+
+#define TAPE_SIZE 200
+
+char tape[TAPE_SIZE];
+int head = 20;
+int state = 0;
+
+void printTape() {
+    printf("State [%2d] Tape: ... ", state);
+    int start = 18;
+    int end = 32;
+    for (int i = start; i <= end; i++) {
+        if (i == head) printf("[%c]", tape[i]);
+        else printf(" %c ", tape[i]);
+    }
+    printf(" ...\n");
+}
+
+int main() {
+    char str[100];
+    
+    printf("--- Turing Machine Simulator: Palindrome Recognition ---\n");
+    printf("Target Test String: \"ababa\"\n");
+    printf("Enter string over {a, b}: ");
+    
+    if (scanf("%99s", str) != 1) return 1;
+    
+    for (int i = 0; i < TAPE_SIZE; i++) tape[i] = 'B';
+    
+    int input_start = 20;
+    int len = strlen(str);
+    for (int i = 0; i < len; i++) {
+        tape[input_start + i] = str[i];
+    }
+    
+    head = input_start;
+    state = 0;
+    
+    /*
+     * States:
+     *   0: Read left symbol (Start)
+     *   1: Moving right looking for 'a' match
+     *   2: Check rightmost for 'a'
+     *   3: Moving right looking for 'b' match
+     *   4: Check rightmost for 'b'
+     *   5: Rewind left to next symbol
+     *   6: ACCEPT state
+     */
+    
+    printf("\nExecution Tape Trace:\n");
+    printTape();
+    
+    int max_steps = 2000;
+    int step = 0;
+    bool halted = false;
+    
+    while (!halted && step < max_steps) {
+        step++;
+        char sym = tape[head];
+        
+        switch (state) {
+            case 0:
+                if (sym == 'a') {
+                    tape[head] = 'B';
+                    head++;
+                    state = 1;
+                } else if (sym == 'b') {
+                    tape[head] = 'B';
+                    head++;
+                    state = 3;
+                } else if (sym == 'B') {
+                    state = 6; // All matched (even palindrome or empty)
+                    halted = true;
+                } else {
+                    halted = true;
+                }
+                break;
+                
+            case 1: // Scan right for matching 'a'
+                if (sym == 'a' || sym == 'b') {
+                    head++;
+                } else if (sym == 'B') {
+                    head--;
+                    state = 2;
+                }
+                break;
+                
+            case 2: // Verify matching 'a'
+                if (sym == 'a') {
+                    tape[head] = 'B';
+                    head--;
+                    state = 5; // Rewind
+                } else if (sym == 'B') {
+                    // Single character left (odd palindrome center)
+                    state = 6; // ACCEPT
+                    halted = true;
+                } else {
+                    halted = true; // Mismatch
+                }
+                break;
+                
+            case 3: // Scan right for matching 'b'
+                if (sym == 'a' || sym == 'b') {
+                    head++;
+                } else if (sym == 'B') {
+                    head--;
+                    state = 4;
+                }
+                break;
+                
+            case 4: // Verify matching 'b'
+                if (sym == 'b') {
+                    tape[head] = 'B';
+                    head--;
+                    state = 5; // Rewind
+                } else if (sym == 'B') {
+                    state = 6; // ACCEPT
+                    halted = true;
+                } else {
+                    halted = true; // Mismatch
+                }
+                break;
+                
+            case 5: // Rewind left
+                if (sym == 'a' || sym == 'b') {
+                    head--;
+                } else if (sym == 'B') {
+                    head++;
+                    state = 0; // Next iteration
+                }
+                break;
+                
+            default:
+                halted = true;
+                break;
+        }
+        
+        printTape();
+    }
+    
+    printf("\n----------------------------------------------------\n");
+    if (state == 6) {
+        printf("Result: String \"%s\" is ACCEPTED (Valid Palindrome)!\n", str);
+    } else {
+        printf("Result: String \"%s\" is REJECTED (Not a Palindrome)!\n", str);
+    }
+    
+    return 0;
+}
