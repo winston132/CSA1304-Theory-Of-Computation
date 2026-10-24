@@ -1,0 +1,84 @@
+#include <stdio.h>
+#include <string.h>
+
+/*
+ * Experiment 12:
+ * Question: Design DFA using simulator to accept the input strings "a", "ac", and "bac".
+ *
+ * DFA Formal Specification:
+ *   Alphabet Σ = {a, b, c}
+ *   Language L = { "a", "ac", "bac" }
+ *
+ * States:
+ *   q0 (0): Start state (empty input)
+ *   q1 (1): Read "a" -> ACCEPTING STATE (accepts "a")
+ *   q2 (2): Read "ac" or "bac" -> ACCEPTING STATE (accepts "ac", "bac")
+ *   q3 (3): Read "b" -> Non-accepting
+ *   q4 (4): Read "ba" -> Non-accepting
+ *   q5 (5): Trap / Dead state -> Non-accepting
+ *
+ * Transition Table:
+ *   State | 'a' | 'b' | 'c'
+ *   ------+-----+-----+-----
+ *   q0    | q1  | q3  | q5
+ *   q1*   | q5  | q5  | q2
+ *   q2*   | q5  | q5  | q5
+ *   q3    | q4  | q5  | q5
+ *   q4    | q5  | q5  | q2
+ *   q5    | q5  | q5  | q5
+ */
+
+int getNextState(int state, char ch) {
+    switch (state) {
+        case 0:
+            if (ch == 'a') return 1;
+            if (ch == 'b') return 3;
+            return 5;
+        case 1:
+            if (ch == 'c') return 2;
+            return 5;
+        case 2:
+            return 5; // String accepted cannot take more characters
+        case 3:
+            if (ch == 'a') return 4;
+            return 5;
+        case 4:
+            if (ch == 'c') return 2;
+            return 5;
+        case 5:
+        default:
+            return 5;
+    }
+}
+
+int main() {
+    char str[100];
+    int state = 0;
+    
+    printf("--- DFA Simulator for L = {\"a\", \"ac\", \"bac\"} ---\n");
+    printf("Alphabet: {a, b, c}\n");
+    printf("Enter input string: ");
+    
+    if (scanf("%99s", str) != 1) return 1;
+    
+    printf("\nState Transition Trace:\n");
+    printf("  Start at state q%d\n", state);
+    
+    for (int i = 0; str[i] != '\0'; i++) {
+        char ch = str[i];
+        int prev = state;
+        state = getNextState(state, ch);
+        printf("  δ(q%d, '%c') -> q%d\n", prev, ch, state);
+    }
+    
+    // States q1 and q2 are accepting
+    if (state == 1 || state == 2) {
+        printf("\nEnded in accepting state q%d.\n", state);
+        printf("Result: ACCEPTED\n");
+    } else {
+        printf("\nEnded in non-accepting state q%d.\n", state);
+        printf("Result: REJECTED\n");
+    }
+    
+    return 0;
+}
