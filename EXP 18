@@ -1,0 +1,118 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+
+/*
+ * Experiment 18:
+ * Question: Design TM using simulator to accept the input string "ww"
+ *           (Strings consisting of two identical halves: L = { ww | w in {a, b}* })
+ *
+ * Turing Machine Specification:
+ *   Alphabet Σ = {a, b}
+ *   Tape Alphabet Γ = {a, b, X, Y, x, y, B}
+ *
+ * Algorithm:
+ *   1. Length check: If length is odd, the string cannot be ww -> Reject.
+ *   2. Midpoint split: Midpoint is at length / 2.
+ *   3. Matching:
+ *      - Mark symbol i in the 1st half ('a' -> 'X', 'b' -> 'Y')
+ *      - Scan right across to symbol i in the 2nd half
+ *      - Verify character matches ('a' matches 'a' -> 'x', 'b' matches 'b' -> 'y')
+ *      - Rewind left back to next symbol of first half
+ *      - Repeat for all characters of first half
+ *   4. Acceptance:
+ *      - All characters of first half marked as {X, Y}
+ *      - All characters of second half marked as {x, y}
+ *      - Followed immediately by blank 'B' -> Halt & ACCEPT.
+ */
+
+#define TAPE_SIZE 200
+
+char tape[TAPE_SIZE];
+int head = 20;
+
+void printTape(int state, int head_pos) {
+    printf("State [q%d] Tape: ... ", state);
+    int start = 18;
+    int end = 36;
+    for (int i = start; i <= end; i++) {
+        if (i == head_pos) printf("[%c]", tape[i]);
+        else printf(" %c ", tape[i]);
+    }
+    printf(" ...\n");
+}
+
+int main() {
+    char str[100];
+    
+    printf("--- Turing Machine Simulator for L = { ww | w in {a, b}* } ---\n");
+    printf("Enter string (e.g., abab, aabbaabb): ");
+    
+    if (scanf("%99s", str) != 1) return 1;
+    
+    int len = strlen(str);
+    for (int i = 0; i < TAPE_SIZE; i++) tape[i] = 'B';
+    
+    int input_start = 20;
+    for (int i = 0; i < len; i++) {
+        tape[input_start + i] = str[i];
+    }
+    
+    head = input_start;
+    
+    printf("\nExecution Tape Trace:\n");
+    printTape(0, head);
+    
+    if (len % 2 != 0 || len == 0) {
+        printf("\nString length (%d) is odd or empty -> Cannot be of form ww.\n", len);
+        printf("Result: REJECTED\n");
+        return 0;
+    }
+    
+    int half = len / 2;
+    bool accepted = true;
+    
+    // Simulate TM steps matching corresponding characters
+    for (int i = 0; i < half; i++) {
+        int idx1 = input_start + i;
+        int idx2 = input_start + half + i;
+        
+        char sym1 = tape[idx1];
+        char sym2 = tape[idx2];
+        
+        // State q0 -> read and mark first half
+        head = idx1;
+        tape[idx1] = (sym1 == 'a') ? 'X' : 'Y';
+        printTape(1, head);
+        
+        // State q1 -> scan right to corresponding symbol in second half
+        head = idx2;
+        printTape(2, head);
+        
+        // Verify match
+        if (sym1 == sym2) {
+            tape[idx2] = (sym2 == 'a') ? 'x' : 'y'; // Mark second half
+            printTape(3, head);
+        } else {
+            printf("\nMismatch detected: symbol '%c' at position %d != '%c' at position %d\n",
+                   sym1, i, sym2, half + i);
+            accepted = false;
+            break;
+        }
+    }
+    
+    // Final verification scan
+    if (accepted) {
+        head = input_start + len;
+        printTape(4, head); // Final state at blank symbol 'B'
+    }
+    
+    printf("\n----------------------------------------------------\n");
+    if (accepted) {
+        printf("Result: String \"%s\" is ACCEPTED by the Turing Machine!\n", str);
+    } else {
+        printf("Result: String \"%s\" is REJECTED by the Turing Machine!\n", str);
+    }
+    
+    return 0;
+}
