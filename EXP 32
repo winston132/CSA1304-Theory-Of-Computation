@@ -1,0 +1,201 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+
+/*
+ * Experiment 32:
+ * Question: Design TM using simulator to perform string comparison where w = {aba aba}
+ *           (Verify whether string 1 equals string 2)
+ *
+ * Turing Machine Specification:
+ *   Input: "aba aba" (two strings separated by a space or '#')
+ *   Tape Alphabet Γ = {a, b, ' ', X, Y, x, y, B}
+ *   Target Test Input: "aba aba"
+ *
+ * Algorithm:
+ *   1. State q0:
+ *      - Read 'a': replace with 'X', move R -> q_scan_a
+ *      - Read 'b': replace with 'Y', move R -> q_scan_b
+ *      - Read ' ' (space/separator): string 1 finished! Move R -> q_verify
+ *   2. q_scan_a / q_scan_b:
+ *      - Move right across separator and across already-matched 'x','y' in string 2
+ *      - Compare first unmarked symbol in string 2:
+ *        - For 'a': must be 'a' -> replace with 'x', move L -> q_rewind
+ *        - For 'b': must be 'b' -> replace with 'y', move L -> q_rewind
+ *        - If mismatch -> Halt & REJECT.
+ *   3. q_rewind:
+ *      - Move left back past separator until 'X' or 'Y' is found
+ *      - Move R -> q0
+ *   4. q_verify:
+ *      - Check that string 2 has no unmatched extra characters before blank 'B'
+ *      - If blank 'B' reached -> Halt & ACCEPT!
+ */
+
+#define TAPE_SIZE 100
+
+char tape[TAPE_SIZE];
+int head = 15;
+int state = 0;
+
+void printTape() {
+    printf("State [q%d] Tape: ... ", state);
+    for (int i = 13; i <= 28; i++) {
+        if (i == head) printf("[%c]", tape[i]);
+        else printf(" %c ", tape[i]);
+    }
+    printf(" ...\n");
+}
+
+int main() {
+    char input[50] = "aba aba";
+    
+    printf("--- Turing Machine Simulator: String Comparison ---\n");
+    printf("Default Test Input: \"aba aba\"\n");
+    printf("Enter two space-separated strings (press Enter for default \"aba aba\"): ");
+    
+    char user_input[50];
+    if (fgets(user_input, sizeof(user_input), stdin) != NULL) {
+        user_input[strcspn(user_input, "\r\n")] = '\0';
+        if (strlen(user_input) > 0) {
+            strncpy(input, user_input, sizeof(input) - 1);
+            input[sizeof(input) - 1] = '\0';
+        }
+    }
+    
+    for (int i = 0; i < TAPE_SIZE; i++) tape[i] = 'B';
+    
+    int start_pos = 15;
+    int len = strlen(input);
+    for (int i = 0; i < len; i++) {
+        tape[start_pos + i] = input[i];
+    }
+    
+    head = start_pos;
+    state = 0;
+    
+    printf("\nExecution Tape Trace for Comparison \"%s\":\n", input);
+    printTape();
+    
+    int max_steps = 1000;
+    int step = 0;
+    bool halted = false;
+    
+    /*
+     * States:
+     *   0: Read from first string
+     *   1: Moving right to match 'a'
+     *   2: Match 'a' in second string
+     *   3: Moving right to match 'b'
+     *   4: Match 'b' in second string
+     *   5: Rewind back to first string
+     *   6: Verification state (check second string has ended)
+     *   7: ACCEPT state
+     */
+    
+    while (!halted && step < max_steps) {
+        step++;
+        char sym = tape[head];
+        
+        switch (state) {
+            case 0:
+                if (sym == 'a') {
+                    tape[head] = 'X';
+                    head++;
+                    state = 1;
+                } else if (sym == 'b') {
+                    tape[head] = 'Y';
+                    head++;
+                    state = 3;
+                } else if (sym == ' ') {
+                    head++;
+                    state = 6; // First string ended, check second string
+                } else {
+                    halted = true;
+                }
+                break;
+                
+            case 1: // Moving right towards separator
+                if (sym == 'a' || sym == 'b') {
+                    head++;
+                } else if (sym == ' ') {
+                    head++;
+                    state = 2; // In second string
+                } else {
+                    halted = true;
+                }
+                break;
+                
+            case 2: // Find first unmarked in second string, expect 'a'
+                if (sym == 'x' || sym == 'y') {
+                    head++;
+                } else if (sym == 'a') {
+                    tape[head] = 'x'; // Matched!
+                    head--;
+                    state = 5; // Rewind
+                } else {
+                    halted = true; // Mismatch
+                }
+                break;
+                
+            case 3: // Moving right towards separator
+                if (sym == 'a' || sym == 'b') {
+                    head++;
+                } else if (sym == ' ') {
+                    head++;
+                    state = 4; // In second string
+                } else {
+                    halted = true;
+                }
+                break;
+                
+            case 4: // Find first unmarked in second string, expect 'b'
+                if (sym == 'x' || sym == 'y') {
+                    head++;
+                } else if (sym == 'b') {
+                    tape[head] = 'y'; // Matched!
+                    head--;
+                    state = 5; // Rewind
+                } else {
+                    halted = true; // Mismatch
+                }
+                break;
+                
+            case 5: // Rewind left across separator to 'X' or 'Y'
+                if (sym == 'x' || sym == 'y' || sym == ' ' || sym == 'a' || sym == 'b') {
+                    head--;
+                } else if (sym == 'X' || sym == 'Y') {
+                    head++;
+                    state = 0; // Next character
+                } else {
+                    halted = true;
+                }
+                break;
+                
+            case 6: // Verify that second string has no extra characters
+                if (sym == 'x' || sym == 'y') {
+                    head++;
+                } else if (sym == 'B') {
+                    state = 7; // Both strings identical!
+                    halted = true;
+                } else {
+                    halted = true; // Second string is longer
+                }
+                break;
+                
+            default:
+                halted = true;
+                break;
+        }
+        
+        printTape();
+    }
+    
+    printf("\n----------------------------------------------------\n");
+    if (state == 7) {
+        printf("Result: Strings MATCH (ACCEPTED by Turing Machine)!\n");
+    } else {
+        printf("Result: Strings DO NOT MATCH (REJECTED by Turing Machine)!\n");
+    }
+    
+    return 0;
+}
