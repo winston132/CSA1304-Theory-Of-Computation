@@ -1,0 +1,92 @@
+#include <stdio.h>
+#include <string.h>
+
+/*
+ * Experiment 29:
+ * Question: Design DFA using simulator to accept the input strings "bc", "c", and "bcaaa"
+ *           over alphabet {a, b, c}.
+ *
+ * DFA Formal Specification:
+ *   Alphabet Σ = {a, b, c}
+ *   Language L = { "c", "bc", "bcaaa" }
+ *
+ * States:
+ *   q0 (0): Start state
+ *   q1 (1): Read "c"      -> ACCEPTING STATE (accepts "c")
+ *   q2 (2): Read "b"      -> Non-accepting
+ *   q3 (3): Read "bc"     -> ACCEPTING STATE (accepts "bc")
+ *   q4 (4): Read "bca"    -> Non-accepting
+ *   q5 (5): Read "bcaa"   -> Non-accepting
+ *   q6 (6): Read "bcaaa"  -> ACCEPTING STATE (accepts "bcaaa")
+ *   q7 (7): Trap / Dead   -> Non-accepting
+ *
+ * Transition Table:
+ *   State | 'a' | 'b' | 'c'
+ *   ------+-----+-----+-----
+ *   q0    | q7  | q2  | q1
+ *   q1*   | q7  | q7  | q7
+ *   q2    | q7  | q7  | q3
+ *   q3*   | q4  | q7  | q7
+ *   q4    | q5  | q7  | q7
+ *   q5    | q6  | q7  | q7
+ *   q6*   | q7  | q7  | q7
+ *   q7    | q7  | q7  | q7
+ */
+
+int getNextState29(int state, char ch) {
+    switch (state) {
+        case 0:
+            if (ch == 'c') return 1;
+            if (ch == 'b') return 2;
+            return 7;
+        case 1:
+            return 7; // "c" takes no further input
+        case 2:
+            if (ch == 'c') return 3;
+            return 7;
+        case 3:
+            if (ch == 'a') return 4;
+            return 7;
+        case 4:
+            if (ch == 'a') return 5;
+            return 7;
+        case 5:
+            if (ch == 'a') return 6;
+            return 7;
+        case 6:
+            return 7; // "bcaaa" takes no further input
+        case 7:
+        default:
+            return 7;
+    }
+}
+
+int main() {
+    char str[100];
+    int state = 0;
+    
+    printf("--- DFA Simulator for L = {\"c\", \"bc\", \"bcaaa\"} ---\n");
+    printf("Alphabet: {a, b, c}\n");
+    printf("Enter input string: ");
+    
+    if (scanf("%99s", str) != 1) return 1;
+    
+    printf("\nState Transition Trace:\n");
+    printf("  Initial State: q%d\n", state);
+    
+    for (int i = 0; str[i] != '\0'; i++) {
+        char ch = str[i];
+        int prev = state;
+        state = getNextState29(state, ch);
+        printf("  Read '%c': δ(q%d, '%c') -> q%d\n", ch, prev, ch, state);
+    }
+    
+    printf("\nFinal State: q%d\n", state);
+    if (state == 1 || state == 3 || state == 6) {
+        printf("Result: String \"%s\" is ACCEPTED by the DFA!\n", str);
+    } else {
+        printf("Result: String \"%s\" is REJECTED by the DFA!\n", str);
+    }
+    
+    return 0;
+}
