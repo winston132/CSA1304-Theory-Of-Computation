@@ -1,0 +1,73 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+
+/*
+ * Experiment 3:
+ * Question: Write a C program to check whether a given string belongs to the language
+ *           defined by the Context Free Grammar (CFG):
+ *           S -> 0A1
+ *           A -> 0A | 1A | ε
+ *
+ * Language Analysis:
+ * - A generates any string of 0's and 1's: (0 + 1)*
+ * - Therefore, S derives strings that start with '0', end with '1',
+ *   and have any arbitrary binary sequence in between: 0(0 + 1)*1
+ * - Minimum length is 2: "01"
+ */
+
+bool belongsToLanguage(const char *str) {
+    int len = strlen(str);
+    
+    // String must have at least 2 characters ('0' and '1')
+    if (len < 2) {
+        return false;
+    }
+    
+    // First character must be '0' (from S -> 0...)
+    if (str[0] != '0') {
+        return false;
+    }
+    
+    // Last character must be '1' (from S -> ...1)
+    if (str[len - 1] != '1') {
+        return false;
+    }
+    
+    // Middle characters (derived from A -> 0A | 1A | ε) must all be '0' or '1'
+    for (int i = 1; i < len - 1; i++) {
+        if (str[i] != '0' && str[i] != '1') {
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+int main() {
+    char str[100];
+    
+    printf("--- CFG Parser: S -> 0A1, A -> 0A | 1A | epsilon ---\n");
+    printf("Language: Strings starting with '0' and ending with '1' over {0, 1}\n");
+    printf("Enter a binary string: ");
+    
+    if (scanf("%99s", str) != 1) {
+        printf("Invalid input.\n");
+        return 1;
+    }
+    
+    printf("\nDerivation Check:\n");
+    printf("1. Check length >= 2: %s (length = %zu)\n", strlen(str) >= 2 ? "PASS" : "FAIL", strlen(str));
+    if (strlen(str) >= 2) {
+        printf("2. Check start symbol ('0'): %s ('%c')\n", str[0] == '0' ? "PASS" : "FAIL", str[0]);
+        printf("3. Check end symbol ('1'): %s ('%c')\n", str[strlen(str) - 1] == '1' ? "PASS" : "FAIL", str[strlen(str) - 1]);
+    }
+    
+    if (belongsToLanguage(str)) {
+        printf("\nResult: String \"%s\" is ACCEPTED (belongs to CFG language)\n", str);
+    } else {
+        printf("\nResult: String \"%s\" is REJECTED (does not belong to CFG language)\n", str);
+    }
+    
+    return 0;
+}
