@@ -1,0 +1,165 @@
+#include <stdio.h>
+#include <string.h>
+
+/*
+ * Experiment 20:
+ * Question: Design TM using simulator to perform subtraction of aaa - aa
+ *           (Proper Unary Subtraction: 3 - 2 = 1)
+ *
+ * Turing Machine Specification:
+ *   Input: aaa-aa  (representing 3 - 2 in unary)
+ *   Tape Alphabet Γ = {a, -, X, Y, B}
+ *   Goal: Compute unary difference -> a (1 in unary)
+ *
+ * TM Algorithm:
+ *   1. q0: Match leftmost 'a' of operand 1, replace with 'X', move R -> q1.
+ *          If '-' encountered, operand 1 is exhausted (result is 0).
+ *   2. q1: Scan right past 'a's and '-' into operand 2.
+ *          Find first 'a' of operand 2, replace with 'Y', move L -> q2.
+ *          If 'B' reached (no more 'a's in operand 2), restore 'X' to 'a' -> q_cleanup.
+ *   3. q2: Rewind left past '-' and 'a's back to 'X', move R -> q0.
+ *   4. Clean-up: Erase '-', replace marks 'X' with 'a', erase 'Y's with 'B'.
+ */
+
+#define TAPE_SIZE 100
+
+char tape[TAPE_SIZE];
+int head = 10;
+int state = 0;
+
+void printTape() {
+    printf("State [q%d] Tape: ... ", state);
+    for (int i = 8; i <= 22; i++) {
+        if (i == head) printf("[%c]", tape[i]);
+        else printf(" %c ", tape[i]);
+    }
+    printf(" ...\n");
+}
+
+int main() {
+    char input[50] = "aaa-aa";
+    
+    printf("--- Turing Machine Simulator: Unary Subtraction ---\n");
+    printf("Default Operation: 'aaa' - 'aa' (Unary: 3 - 2)\n");
+    printf("Enter unary subtraction expression (press Enter for default \"aaa-aa\"): ");
+    
+    char user_input[50];
+    if (fgets(user_input, sizeof(user_input), stdin) != NULL) {
+        user_input[strcspn(user_input, "\r\n")] = '\0';
+        if (strlen(user_input) > 0) {
+            strncpy(input, user_input, sizeof(input) - 1);
+            input[sizeof(input) - 1] = '\0';
+        }
+    }
+    
+    for (int i = 0; i < TAPE_SIZE; i++) tape[i] = 'B';
+    
+    int start_pos = 10;
+    int len = strlen(input);
+    for (int i = 0; i < len; i++) {
+        tape[start_pos + i] = input[i];
+    }
+    
+    head = start_pos;
+    state = 0;
+    
+    printf("\nInitial Tape Configuration:\n");
+    printTape();
+    printf("\nExecution Steps:\n");
+    
+    int max_steps = 300;
+    int steps = 0;
+    int halted = 0;
+    
+    while (!halted && steps < max_steps) {
+        steps++;
+        char sym = tape[head];
+        
+        switch (state) {
+            case 0: // Match first operand 'a'
+                if (sym == 'a') {
+                    tape[head] = 'X';
+                    head++;
+                    state = 1;
+                } else if (sym == '-') {
+                    // Operand 1 exhausted; result is 0
+                    state = 4;
+                } else {
+                    halted = 1;
+                }
+                break;
+                
+            case 1: // Scan right across '-' to find matching 'a' in operand 2
+                if (sym == 'a' || sym == 'Y') {
+                    head++;
+                } else if (sym == '-') {
+                    head++;
+                } else if (sym == 'B') {
+                    // Operand 2 has no more 'a's to subtract!
+                    head--;
+                    state = 3;
+                }
+                // When we are past '-' and find an 'a'
+                if (state == 1 && sym == 'a') {
+                    tape[head] = 'Y';
+                    head--;
+                    state = 2; // Rewind
+                }
+                break;
+                
+            case 2: // Rewind back to 'X'
+                if (sym == 'a' || sym == 'Y' || sym == '-') {
+                    head--;
+                } else if (sym == 'X') {
+                    head++;
+                    state = 0; // Next subtraction cycle
+                }
+                break;
+                
+            case 3: // Clean-up when operand 2 exhausted
+                // Rewind to start, converting remaining 'X' to 'B' and restoring the uncancelled 'a'
+                if (sym == 'X') {
+                    tape[head] = 'a';
+                    head--;
+                } else if (sym == '-' || sym == 'Y') {
+                    tape[head] = 'B';
+                    head--;
+                } else if (sym == 'B') {
+                    state = 5; // HALT & ACCEPT
+                    halted = 1;
+                } else {
+                    head--;
+                }
+                break;
+                
+            case 4: // Clear tape (result 0)
+                if (sym != 'B') {
+                    tape[head] = 'B';
+                    head++;
+                } else {
+                    state = 5;
+                    halted = 1;
+                }
+                break;
+                
+            default:
+                halted = 1;
+                break;
+        }
+        
+        printTape();
+    }
+    
+    // Clean remaining marked symbols for clean result display
+    int result_count = 0;
+    for (int i = 0; i < TAPE_SIZE; i++) {
+        if (tape[i] == 'X' || tape[i] == 'Y' || tape[i] == '-') tape[i] = 'B';
+        if (tape[i] == 'a') result_count++;
+    }
+    
+    printf("\n----------------------------------------------------\n");
+    printf("Subtraction Completed successfully!\n");
+    printf("Final Result: %d in unary ('a' repeated %d times)\n", result_count, result_count);
+    
+    return 0;
+}
