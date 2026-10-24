@@ -1,0 +1,110 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+
+/*
+ * Experiment 36:
+ * Question: Design NFA using simulator to accept strings that start with 'a' and end with 'b'
+ *           over set {a, b} and check whether W = "abaab" is accepted or not.
+ *
+ * NFA Formal Specification:
+ *   Alphabet Σ = {a, b}
+ *   Language L = { a (a + b)* b }
+ *   Q = {q0, q1, q2}
+ *   q0 = Start state
+ *   F  = {q2} (Accept state)
+ *
+ * Transitions:
+ *   δ(q0, 'a') = {q1}
+ *   δ(q0, 'b') = ∅
+ *   δ(q1, 'a') = {q1}
+ *   δ(q1, 'b') = {q1, q2}  <-- Non-deterministic choice: stay in q1 or jump to q2
+ *   δ(q2, 'a') = ∅
+ *   δ(q2, 'b') = ∅
+ */
+
+#define NUM_STATES 3
+
+void printActiveSet(bool states[NUM_STATES]) {
+    printf("{ ");
+    bool first = true;
+    for (int i = 0; i < NUM_STATES; i++) {
+        if (states[i]) {
+            if (!first) printf(", ");
+            printf("q%d", i);
+            first = false;
+        }
+    }
+    if (first) printf("∅");
+    printf(" }");
+}
+
+int main() {
+    char str[100] = "abaab";
+    
+    printf("--- NFA Simulator: Strings Starting with 'a' and Ending with 'b' ---\n");
+    printf("Target Test String: W = \"abaab\"\n");
+    printf("Enter string over {a, b} (press Enter for default \"abaab\"): ");
+    
+    char user_input[100];
+    if (fgets(user_input, sizeof(user_input), stdin) != NULL) {
+        user_input[strcspn(user_input, "\r\n")] = '\0';
+        if (strlen(user_input) > 0) {
+            strncpy(str, user_input, sizeof(str) - 1);
+            str[sizeof(str) - 1] = '\0';
+        }
+    }
+    
+    bool current[NUM_STATES] = {false};
+    current[0] = true; // Start in q0
+    
+    printf("\nExecution Trace for W = \"%s\":\n", str);
+    printf("  Initial Active States: ");
+    printActiveSet(current);
+    printf("\n");
+    
+    for (int i = 0; str[i] != '\0'; i++) {
+        char ch = str[i];
+        bool next[NUM_STATES] = {false};
+        
+        if (ch != 'a' && ch != 'b') {
+            printf("  Invalid symbol '%c' encountered.\n", ch);
+            break;
+        }
+        
+        // Transitions from q0
+        if (current[0]) {
+            if (ch == 'a') next[1] = true;
+        }
+        
+        // Transitions from q1
+        if (current[1]) {
+            if (ch == 'a') {
+                next[1] = true;
+            } else if (ch == 'b') {
+                next[1] = true;
+                next[2] = true; // Non-deterministic branch to accept state
+            }
+        }
+        
+        // Transitions from q2 (none)
+        
+        printf("  Read '%c': Active states -> ", ch);
+        printActiveSet(next);
+        printf("\n");
+        
+        memcpy(current, next, sizeof(next));
+    }
+    
+    printf("\nFinal Active States: ");
+    printActiveSet(current);
+    printf("\n");
+    
+    if (current[2]) {
+        printf("Result: String W = \"%s\" is ACCEPTED (Starts with 'a' and ends with 'b')\n", str);
+    } else {
+        printf("Result: String W = \"%s\" is REJECTED\n", str);
+    }
+    
+    return 0;
+}
