@@ -1,0 +1,64 @@
+#include <stdio.h>
+#include <string.h>
+
+/*
+ * Experiment 22:
+ * Question: Design DFA using simulator to accept odd number of a's.
+ *
+ * DFA Formal Specification:
+ *   Alphabet Σ = {a, b}
+ *   Language L = { w in {a, b}* | count of 'a' in w is odd }
+ *
+ * States:
+ *   q0 (0): Even count of 'a's seen -> START STATE (Non-accepting)
+ *   q1 (1): Odd count of 'a's seen  -> ACCEPTING STATE
+ *
+ * Transition Table:
+ *   State | 'a' | 'b'
+ *   ------+-----+-----
+ *   q0    | q1  | q0
+ *   q1*   | q0  | q1
+ */
+
+int main() {
+    char str[100];
+    int state = 0; // q0: Even count of 'a's (Start)
+    
+    printf("--- DFA Simulator: Accept Strings with Odd Number of 'a's ---\n");
+    printf("Alphabet: {a, b}\n");
+    printf("Enter string over {a, b}: ");
+    
+    if (scanf("%99s", str) != 1) return 1;
+    
+    printf("\nState Transition Trace:\n");
+    printf("  Initial State: q%d (Even count of 'a's = 0)\n", state);
+    
+    int count_a = 0;
+    for (int i = 0; str[i] != '\0'; i++) {
+        char ch = str[i];
+        int prev = state;
+        
+        if (ch == 'a') {
+            count_a++;
+            state = (state == 0) ? 1 : 0;
+        } else if (ch == 'b') {
+            state = state;
+        } else {
+            printf("Invalid symbol '%c' encountered.\n", ch);
+            printf("Result: REJECTED\n");
+            return 0;
+        }
+        
+        printf("  Read '%c': δ(q%d, '%c') -> q%d (Total 'a's so far: %d)\n",
+               ch, prev, ch, state, count_a);
+    }
+    
+    printf("\nFinal State: q%d (Total 'a's = %d)\n", state, count_a);
+    if (state == 1) {
+        printf("Result: ACCEPTED (String contains odd number of 'a's)\n");
+    } else {
+        printf("Result: REJECTED (String contains even number of 'a's)\n");
+    }
+    
+    return 0;
+}
