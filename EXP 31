@@ -1,0 +1,127 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+
+/*
+ * Experiment 31:
+ * Question: Design PDA using simulator to accept the input string a^n b^n
+ *
+ * Pushdown Automaton Specification:
+ *   M = (Q, Σ, Γ, δ, q0, Z0, F)
+ *   Q = {q0, q1, q2}
+ *   Σ = {a, b}
+ *   Γ = {Z0, A}
+ *   q0 = Start state
+ *   Z0 = Initial bottom of stack marker
+ *   F  = {q2} (Accept state)
+ *
+ * Transitions:
+ *   δ(q0, 'a', Z0) = (q0, A Z0)  [Push 'A']
+ *   δ(q0, 'a', A)  = (q0, A A)   [Push 'A']
+ *   δ(q0, 'b', A)  = (q1, ε)     [Pop 'A']
+ *   δ(q1, 'b', A)  = (q1, ε)     [Pop 'A']
+ *   δ(q1, ε,   Z0) = (q2, Z0)    [Accept by Final State]
+ */
+
+#define MAX_STACK 100
+
+char stack[MAX_STACK];
+int top = -1;
+
+void push(char c) {
+    if (top < MAX_STACK - 1) {
+        stack[++top] = c;
+    }
+}
+
+char pop() {
+    if (top >= 0) {
+        return stack[top--];
+    }
+    return '\0';
+}
+
+void printStack() {
+    printf("[bottom] ");
+    for (int i = 0; i <= top; i++) {
+        printf("%c ", stack[i]);
+    }
+    printf("[top]");
+}
+
+int main() {
+    char str[100];
+    
+    printf("--- PDA Simulator for Language L = { a^n b^n | n >= 1 } ---\n");
+    printf("Enter string (e.g., ab, aabb, aaabbb): ");
+    
+    if (scanf("%99s", str) != 1) return 1;
+    
+    top = -1;
+    push('Z'); // Initial stack symbol Z0
+    
+    int state = 0;
+    bool error = false;
+    
+    printf("\nExecution Trace:\n");
+    printf("Initial State: q0, Stack: ");
+    printStack();
+    printf("\n----------------------------------------------------\n");
+    
+    for (int i = 0; str[i] != '\0'; i++) {
+        char ch = str[i];
+        
+        if (state == 0) {
+            if (ch == 'a') {
+                push('A');
+                printf("Read '%c': Push 'A' -> State q0 | Stack: ", ch);
+                printStack();
+                printf("\n");
+            } else if (ch == 'b') {
+                if (top >= 0 && stack[top] == 'A') {
+                    pop();
+                    state = 1;
+                    printf("Read '%c': Pop 'A'  -> State q1 | Stack: ", ch);
+                    printStack();
+                    printf("\n");
+                } else {
+                    error = true;
+                    break;
+                }
+            } else {
+                error = true;
+                break;
+            }
+        } else if (state == 1) {
+            if (ch == 'b') {
+                if (top >= 0 && stack[top] == 'A') {
+                    pop();
+                    printf("Read '%c': Pop 'A'  -> State q1 | Stack: ", ch);
+                    printStack();
+                    printf("\n");
+                } else {
+                    error = true;
+                    break;
+                }
+            } else {
+                error = true;
+                break;
+            }
+        }
+    }
+    
+    // Check acceptance: end of input, state 1, only Z0 left
+    if (!error && state == 1 && top == 0 && stack[top] == 'Z') {
+        state = 2; // q2
+        printf("End of input: ε-transition on Z0 -> State q2 (Final State)\n");
+    }
+    
+    printf("----------------------------------------------------\n");
+    if (state == 2) {
+        printf("Result: String \"%s\" is ACCEPTED by the PDA!\n", str);
+    } else {
+        printf("Result: String \"%s\" is REJECTED by the PDA!\n", str);
+    }
+    
+    return 0;
+}
