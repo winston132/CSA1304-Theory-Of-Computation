@@ -86,3 +86,34 @@ int main() {
     
     return 0;
 }
+
+
+/*
+ * ==============================================================================
+ * EXECUTION OUTPUT & VERIFICATION
+ * ==============================================================================
+ * Experiment: EXP 23
+ * Test Input: (Hardcoded / Program Default Input)
+ * 
+ * Console Output:
+ * ------------------------------------------------------------------------------
+ * --- DFA Simulator: Strings Ending with "ab" ---
+ * Target Test String: W = "aaabab"
+ * Enter string over {a, b} (press Enter to use default "aaabab"): 
+ * State Transition Trace for W = "aaabab":
+ *   Initial State: q0
+ *   Read 'a': Î´(q0, 'a') -> q1
+ *   Read 'a': Î´(q1, 'a') -> q1
+ *   Read 'a': Î´(q1, 'a') -> q1
+ *   Read 'b': Î´(q1, 'b') -> q2
+ *   Read 'a': Î´(q2, 'a') -> q1
+ *   Read 'b': Î´(q1, 'b') -> q2
+ * 
+ * Final State: q2
+ * Result: String "aaabab" is ACCEPTED (Ends with "ab")
+ * ------------------------------------------------------------------------------
+ * 
+ * Verification Screenshot: screenshots/EXP_23.png
+ * Status: Successfully compiled with GCC and verified.
+ * ==============================================================================
+ */
