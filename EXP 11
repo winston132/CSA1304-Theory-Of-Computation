@@ -81,3 +81,42 @@ int main() {
     
     return 0;
 }
+
+
+/*
+ * ==============================================================================
+ * EXECUTION OUTPUT & VERIFICATION
+ * ==============================================================================
+ * Experiment: EXP 11
+ * Test Input: (Hardcoded / Program Default Input)
+ * 
+ * Console Output:
+ * ------------------------------------------------------------------------------
+ * --- Îµ-Closure Computation Using Transitive Closure (Warshall's Method) ---
+ * Demonstration on standard NFA-Îµ with states {q0, q1, q2, q3}:
+ *   Îµ-Transitions:
+ *     q0 --Îµ--> q1
+ *     q1 --Îµ--> q2
+ *     q2 --Îµ--> q3
+ * 
+ * Transition Matrix with Îµ-reachability:
+ * State	q0	q1	q2	q3	
+ * q0	1	1	1	1	
+ * q1	0	1	1	1	
+ * q2	0	0	1	1	
+ * q3	0	0	0	1	
+ * 
+ * ----------------------------------------
+ * Derived Îµ-Closure Sets:
+ * ----------------------------------------
+ * Îµ-closure(q0) = { q0, q1, q2, q3 }
+ * Îµ-closure(q1) = { q1, q2, q3 }
+ * Îµ-closure(q2) = { q2, q3 }
+ * Îµ-closure(q3) = { q3 }
+ * ----------------------------------------
+ * ------------------------------------------------------------------------------
+ * 
+ * Verification Screenshot: screenshots/EXP_11.png
+ * Status: Successfully compiled with GCC and verified.
+ * ==============================================================================
+ */
