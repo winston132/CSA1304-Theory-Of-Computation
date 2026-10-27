@@ -116,3 +116,34 @@ int main() {
     
     return 0;
 }
+
+
+/*
+ * ==============================================================================
+ * EXECUTION OUTPUT & VERIFICATION
+ * ==============================================================================
+ * Experiment: EXP 18
+ * Test Input: abab
+ * 
+ * Console Output:
+ * ------------------------------------------------------------------------------
+ * --- Turing Machine Simulator for L = { ww | w in {a, b}* } ---
+ * Enter string (e.g., abab, aabbaabb): 
+ * Execution Tape Trace:
+ * State [q0] Tape: ...  B  B [a] b  a  b  B  B  B  B  B  B  B  B  B  B  B  B  B  ...
+ * State [q1] Tape: ...  B  B [X] b  a  b  B  B  B  B  B  B  B  B  B  B  B  B  B  ...
+ * State [q2] Tape: ...  B  B  X  b [a] b  B  B  B  B  B  B  B  B  B  B  B  B  B  ...
+ * State [q3] Tape: ...  B  B  X  b [x] b  B  B  B  B  B  B  B  B  B  B  B  B  B  ...
+ * State [q1] Tape: ...  B  B  X [Y] x  b  B  B  B  B  B  B  B  B  B  B  B  B  B  ...
+ * State [q2] Tape: ...  B  B  X  Y  x [b] B  B  B  B  B  B  B  B  B  B  B  B  B  ...
+ * State [q3] Tape: ...  B  B  X  Y  x [y] B  B  B  B  B  B  B  B  B  B  B  B  B  ...
+ * State [q4] Tape: ...  B  B  X  Y  x  y [B] B  B  B  B  B  B  B  B  B  B  B  B  ...
+ * 
+ * ----------------------------------------------------
+ * Result: String "abab" is ACCEPTED by the Turing Machine!
+ * ------------------------------------------------------------------------------
+ * 
+ * Verification Screenshot: screenshots/EXP_18.png
+ * Status: Successfully compiled with GCC and verified.
+ * ==============================================================================
+ */
