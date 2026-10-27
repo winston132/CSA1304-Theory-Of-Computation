@@ -142,3 +142,35 @@ int main() {
     
     return 0;
 }
+
+
+/*
+ * ==============================================================================
+ * EXECUTION OUTPUT & VERIFICATION
+ * ==============================================================================
+ * Experiment: EXP 16
+ * Test Input: abb
+ * 
+ * Console Output:
+ * ------------------------------------------------------------------------------
+ * --- Turing Machine Simulator for L = { a^n b^(2n) | n >= 1 } ---
+ * Enter input string (e.g., abb, aabbbb): 
+ * Execution Tape Trace:
+ * State [q0] Tape: ...  B  B [a] b  b  B  B  B  B  B  B  B  B  B  B  B  B  B  B  B  B  ...
+ * State [q1] Tape: ...  B  B  X [b] b  B  B  B  B  B  B  B  B  B  B  B  B  B  B  B  B  ...
+ * State [q2] Tape: ...  B  B  X  Y [b] B  B  B  B  B  B  B  B  B  B  B  B  B  B  B  B  ...
+ * State [q3] Tape: ...  B  B  X [Y] Y  B  B  B  B  B  B  B  B  B  B  B  B  B  B  B  B  ...
+ * State [q3] Tape: ...  B  B [X] Y  Y  B  B  B  B  B  B  B  B  B  B  B  B  B  B  B  B  ...
+ * State [q0] Tape: ...  B  B  X [Y] Y  B  B  B  B  B  B  B  B  B  B  B  B  B  B  B  B  ...
+ * State [q4] Tape: ...  B  B  X  Y [Y] B  B  B  B  B  B  B  B  B  B  B  B  B  B  B  B  ...
+ * State [q4] Tape: ...  B  B  X  Y  Y [B] B  B  B  B  B  B  B  B  B  B  B  B  B  B  B  ...
+ * State [q5] Tape: ...  B  B  X  Y  Y [B] B  B  B  B  B  B  B  B  B  B  B  B  B  B  B  ...
+ * 
+ * ----------------------------------------------------
+ * Result: String "abb" is ACCEPTED by the Turing Machine!
+ * ------------------------------------------------------------------------------
+ * 
+ * Verification Screenshot: screenshots/EXP_16.png
+ * Status: Successfully compiled with GCC and verified.
+ * ==============================================================================
+ */
