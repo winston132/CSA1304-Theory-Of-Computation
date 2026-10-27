@@ -60,3 +60,30 @@ int main() {
     
     return 0;
 }
+
+
+/*
+ * ==============================================================================
+ * EXECUTION OUTPUT & VERIFICATION
+ * ==============================================================================
+ * Experiment: EXP 7
+ * Test Input: 001011
+ * 
+ * Console Output:
+ * ------------------------------------------------------------------------------
+ * --- CFG Parser: S -> A101A, A -> 0A | 1A | epsilon ---
+ * Language: All binary strings containing '101' as a substring
+ * Enter a binary string: 
+ * Derivation Details:
+ *   Found mandatory substring '101' at index 2
+ *   Prefix derived from first A : "00"
+ *   Center match (101)          : "101"
+ *   Suffix derived from second A: "1"
+ * 
+ * Result: String "001011" is ACCEPTED (belongs to CFG language)
+ * ------------------------------------------------------------------------------
+ * 
+ * Verification Screenshot: screenshots/EXP_7.png
+ * Status: Successfully compiled with GCC and verified.
+ * ==============================================================================
+ */
