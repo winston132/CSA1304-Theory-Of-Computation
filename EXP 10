@@ -84,3 +84,30 @@ int main() {
     
     return 0;
 }
+
+
+/*
+ * ==============================================================================
+ * EXECUTION OUTPUT & VERIFICATION
+ * ==============================================================================
+ * Experiment: EXP 10
+ * Test Input: 3 2 0 1 1 2
+ * 
+ * Console Output:
+ * ------------------------------------------------------------------------------
+ * --- Computation of Îµ-Closure for NFA with Îµ-moves ---
+ * Enter the number of states (e.g., 3): Enter the number of Îµ-transitions: Enter Îµ-transitions as 'source destination' (0-indexed, e.g., 0 1 for q0 -> q1):
+ *   Transition 1:   Transition 2: 
+ * ========================================
+ *           Îµ-CLOSURE FOR ALL STATES       
+ * ========================================
+ * Îµ-closure(q0) = { q0, q1, q2 }
+ * Îµ-closure(q1) = { q1, q2 }
+ * Îµ-closure(q2) = { q2 }
+ * ========================================
+ * ------------------------------------------------------------------------------
+ * 
+ * Verification Screenshot: screenshots/EXP_10.png
+ * Status: Successfully compiled with GCC and verified.
+ * ==============================================================================
+ */
