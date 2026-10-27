@@ -107,3 +107,31 @@ int main() {
     
     return 0;
 }
+
+
+/*
+ * ==============================================================================
+ * EXECUTION OUTPUT & VERIFICATION
+ * ==============================================================================
+ * Experiment: EXP 38
+ * Test Input: bbc
+ * 
+ * Console Output:
+ * ------------------------------------------------------------------------------
+ * --- NFA Simulator for L = {"c", "bbc", "bcaaa"} ---
+ * Alphabet: {a, b, c}
+ * Enter string: 
+ * Execution Trace:
+ *   Initial Active States: { q0 }
+ *   Read 'b': Active states -> { q2, q4 }
+ *   Read 'b': Active states -> { q3 }
+ *   Read 'c': Active states -> { q8 }
+ * 
+ * Final Active States: { q8 }
+ * Result: String "bbc" is ACCEPTED by the NFA!
+ * ------------------------------------------------------------------------------
+ * 
+ * Verification Screenshot: screenshots/EXP_38.png
+ * Status: Successfully compiled with GCC and verified.
+ * ==============================================================================
+ */
