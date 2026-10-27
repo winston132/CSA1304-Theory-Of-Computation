@@ -78,3 +78,35 @@ int main() {
     
     return 0;
 }
+
+
+/*
+ * ==============================================================================
+ * EXECUTION OUTPUT & VERIFICATION
+ * ==============================================================================
+ * Experiment: EXP 35
+ * Test Input: aaabaaa
+ * 
+ * Console Output:
+ * ------------------------------------------------------------------------------
+ * --- DFA Simulator: Strings where 'a's always appear Tripled ---
+ * Language: L = (b | aaa)*
+ * Enter string over {a, b} (or 'E' for empty/epsilon): 
+ * State Transition Trace:
+ *   Initial State: q0
+ *   Read 'a': Î´(q0, 'a') -> q1
+ *   Read 'a': Î´(q1, 'a') -> q2
+ *   Read 'a': Î´(q2, 'a') -> q0
+ *   Read 'b': Î´(q0, 'b') -> q0
+ *   Read 'a': Î´(q0, 'a') -> q1
+ *   Read 'a': Î´(q1, 'a') -> q2
+ *   Read 'a': Î´(q2, 'a') -> q0
+ * 
+ * Final State: q0
+ * Result: String "aaabaaa" is ACCEPTED ('a's always appear tripled)
+ * ------------------------------------------------------------------------------
+ * 
+ * Verification Screenshot: screenshots/EXP_35.png
+ * Status: Successfully compiled with GCC and verified.
+ * ==============================================================================
+ */
