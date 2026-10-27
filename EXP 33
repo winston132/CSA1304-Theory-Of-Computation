@@ -87,3 +87,33 @@ int main() {
     
     return 0;
 }
+
+
+/*
+ * ==============================================================================
+ * EXECUTION OUTPUT & VERIFICATION
+ * ==============================================================================
+ * Experiment: EXP 33
+ * Test Input: aabcb
+ * 
+ * Console Output:
+ * ------------------------------------------------------------------------------
+ * --- DFA Simulator: Substring "abc" Acceptance ---
+ * Alphabet: {a, b, c}
+ * Enter string over {a, b, c}: 
+ * State Transition Trace:
+ *   Initial State: q0
+ *   Read 'a': Î´(q0, 'a') -> q1
+ *   Read 'a': Î´(q1, 'a') -> q1
+ *   Read 'b': Î´(q1, 'b') -> q2
+ *   Read 'c': Î´(q2, 'c') -> q3 [MATCHED 'abc']
+ *   Read 'b': Î´(q3, 'b') -> q3
+ * 
+ * Final State: q3
+ * Result: String "aabcb" is ACCEPTED (Contains substring "abc")
+ * ------------------------------------------------------------------------------
+ * 
+ * Verification Screenshot: screenshots/EXP_33.png
+ * Status: Successfully compiled with GCC and verified.
+ * ==============================================================================
+ */
