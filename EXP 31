@@ -125,3 +125,32 @@ int main() {
     
     return 0;
 }
+
+
+/*
+ * ==============================================================================
+ * EXECUTION OUTPUT & VERIFICATION
+ * ==============================================================================
+ * Experiment: EXP 31
+ * Test Input: aabb
+ * 
+ * Console Output:
+ * ------------------------------------------------------------------------------
+ * --- PDA Simulator for Language L = { a^n b^n | n >= 1 } ---
+ * Enter string (e.g., ab, aabb, aaabbb): 
+ * Execution Trace:
+ * Initial State: q0, Stack: [bottom] Z [top]
+ * ----------------------------------------------------
+ * Read 'a': Push 'A' -> State q0 | Stack: [bottom] Z A [top]
+ * Read 'a': Push 'A' -> State q0 | Stack: [bottom] Z A A [top]
+ * Read 'b': Pop 'A'  -> State q1 | Stack: [bottom] Z A [top]
+ * Read 'b': Pop 'A'  -> State q1 | Stack: [bottom] Z [top]
+ * End of input: Îµ-transition on Z0 -> State q2 (Final State)
+ * ----------------------------------------------------
+ * Result: String "aabb" is ACCEPTED by the PDA!
+ * ------------------------------------------------------------------------------
+ * 
+ * Verification Screenshot: screenshots/EXP_31.png
+ * Status: Successfully compiled with GCC and verified.
+ * ==============================================================================
+ */
