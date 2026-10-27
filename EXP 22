@@ -62,3 +62,31 @@ int main() {
     
     return 0;
 }
+
+
+/*
+ * ==============================================================================
+ * EXECUTION OUTPUT & VERIFICATION
+ * ==============================================================================
+ * Experiment: EXP 22
+ * Test Input: baa
+ * 
+ * Console Output:
+ * ------------------------------------------------------------------------------
+ * --- DFA Simulator: Accept Strings with Odd Number of 'a's ---
+ * Alphabet: {a, b}
+ * Enter string over {a, b}: 
+ * State Transition Trace:
+ *   Initial State: q0 (Even count of 'a's = 0)
+ *   Read 'b': Î´(q0, 'b') -> q0 (Total 'a's so far: 0)
+ *   Read 'a': Î´(q0, 'a') -> q1 (Total 'a's so far: 1)
+ *   Read 'a': Î´(q1, 'a') -> q0 (Total 'a's so far: 2)
+ * 
+ * Final State: q0 (Total 'a's = 2)
+ * Result: REJECTED (String contains even number of 'a's)
+ * ------------------------------------------------------------------------------
+ * 
+ * Verification Screenshot: screenshots/EXP_22.png
+ * Status: Successfully compiled with GCC and verified.
+ * ==============================================================================
+ */
