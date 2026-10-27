@@ -63,3 +63,32 @@ int main() {
     
     return 0;
 }
+
+
+/*
+ * ==============================================================================
+ * EXECUTION OUTPUT & VERIFICATION
+ * ==============================================================================
+ * Experiment: EXP 34
+ * Test Input: abcc
+ * 
+ * Console Output:
+ * ------------------------------------------------------------------------------
+ * --- DFA Simulator: Accept Strings with Even Number of 'c's ---
+ * Alphabet: {a, b, c}
+ * Enter string over {a, b, c} (or 'E' for empty/epsilon): 
+ * State Transition Trace:
+ *   Initial State: q0 (Even count of 'c's = 0)
+ *   Read 'a': Î´(q0, 'a') -> q0 (Total 'c's so far: 0)
+ *   Read 'b': Î´(q0, 'b') -> q0 (Total 'c's so far: 0)
+ *   Read 'c': Î´(q0, 'c') -> q1 (Total 'c's so far: 1)
+ *   Read 'c': Î´(q1, 'c') -> q0 (Total 'c's so far: 2)
+ * 
+ * Final State: q0 (Total 'c's = 2)
+ * Result: String "abcc" is ACCEPTED (Even number of 'c's)
+ * ------------------------------------------------------------------------------
+ * 
+ * Verification Screenshot: screenshots/EXP_34.png
+ * Status: Successfully compiled with GCC and verified.
+ * ==============================================================================
+ */
