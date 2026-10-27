@@ -121,3 +121,32 @@ int main() {
     
     return 0;
 }
+
+
+/*
+ * ==============================================================================
+ * EXECUTION OUTPUT & VERIFICATION
+ * ==============================================================================
+ * Experiment: EXP 37
+ * Test Input: aab
+ * 
+ * Console Output:
+ * ------------------------------------------------------------------------------
+ * --- NFA Simulator: Strings Starting and Ending with Different Symbols ---
+ * Alphabet: {a, b}
+ * Language: a(a+b)*b U b(a+b)*a
+ * Enter string over {a, b}: 
+ * Execution Trace:
+ *   Initial Active States: { q0 }
+ *   Read 'a': Active states -> { q1 }
+ *   Read 'a': Active states -> { q1 }
+ *   Read 'b': Active states -> { q1, q2 }
+ * 
+ * Final Active States: { q1, q2 }
+ * Result: String "aab" is ACCEPTED (Starts with 'a' and ends with 'b')
+ * ------------------------------------------------------------------------------
+ * 
+ * Verification Screenshot: screenshots/EXP_37.png
+ * Status: Successfully compiled with GCC and verified.
+ * ==============================================================================
+ */
