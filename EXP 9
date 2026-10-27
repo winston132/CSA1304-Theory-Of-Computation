@@ -105,3 +105,32 @@ int main() {
     
     return 0;
 }
+
+
+/*
+ * ==============================================================================
+ * EXECUTION OUTPUT & VERIFICATION
+ * ==============================================================================
+ * Experiment: EXP 9
+ * Test Input: 0101
+ * 
+ * Console Output:
+ * ------------------------------------------------------------------------------
+ * --- NFA Simulator: Strings starting with '0' and ending with '1' ---
+ * Alphabet Î£ = {0, 1}
+ * Enter binary input string: 
+ * Execution Trace:
+ * Initial State: { q0 }
+ * After reading '0': { q1 }
+ * After reading '1': { q1, q2 }
+ * After reading '0': { q1 }
+ * After reading '1': { q1, q2 }
+ * 
+ * Final Active States contain accepting state q2.
+ * Result: ACCEPTED
+ * ------------------------------------------------------------------------------
+ * 
+ * Verification Screenshot: screenshots/EXP_9.png
+ * Status: Successfully compiled with GCC and verified.
+ * ==============================================================================
+ */
