@@ -96,3 +96,38 @@ int main() {
     
     return 0;
 }
+
+
+/*
+ * ==============================================================================
+ * EXECUTION OUTPUT & VERIFICATION
+ * ==============================================================================
+ * Experiment: EXP 39
+ * Test Input: (Hardcoded / Program Default Input)
+ * 
+ * Console Output:
+ * ------------------------------------------------------------------------------
+ * --- DFA Simulator: Strings Ending with "abc" ---
+ * Alphabet: {a, b, c}
+ * Target Test String: W = "abbaababc"
+ * Enter string over {a, b, c} (press Enter for default "abbaababc"): 
+ * State Transition Trace for W = "abbaababc":
+ *   Initial State: q0
+ *   Read 'a': Î´(q0, 'a') -> q1
+ *   Read 'b': Î´(q1, 'b') -> q2
+ *   Read 'b': Î´(q2, 'b') -> q0
+ *   Read 'a': Î´(q0, 'a') -> q1
+ *   Read 'a': Î´(q1, 'a') -> q1
+ *   Read 'b': Î´(q1, 'b') -> q2
+ *   Read 'a': Î´(q2, 'a') -> q1
+ *   Read 'b': Î´(q1, 'b') -> q2
+ *   Read 'c': Î´(q2, 'c') -> q3
+ * 
+ * Final State: q3
+ * Result: String "abbaababc" is ACCEPTED (Ends with "abc")
+ * ------------------------------------------------------------------------------
+ * 
+ * Verification Screenshot: screenshots/EXP_39.png
+ * Status: Successfully compiled with GCC and verified.
+ * ==============================================================================
+ */
