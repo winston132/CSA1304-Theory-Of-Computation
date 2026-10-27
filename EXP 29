@@ -90,3 +90,33 @@ int main() {
     
     return 0;
 }
+
+
+/*
+ * ==============================================================================
+ * EXECUTION OUTPUT & VERIFICATION
+ * ==============================================================================
+ * Experiment: EXP 29
+ * Test Input: bcaaa
+ * 
+ * Console Output:
+ * ------------------------------------------------------------------------------
+ * --- DFA Simulator for L = {"c", "bc", "bcaaa"} ---
+ * Alphabet: {a, b, c}
+ * Enter input string: 
+ * State Transition Trace:
+ *   Initial State: q0
+ *   Read 'b': Î´(q0, 'b') -> q2
+ *   Read 'c': Î´(q2, 'c') -> q3
+ *   Read 'a': Î´(q3, 'a') -> q4
+ *   Read 'a': Î´(q4, 'a') -> q5
+ *   Read 'a': Î´(q5, 'a') -> q6
+ * 
+ * Final State: q6
+ * Result: String "bcaaa" is ACCEPTED by the DFA!
+ * ------------------------------------------------------------------------------
+ * 
+ * Verification Screenshot: screenshots/EXP_29.png
+ * Status: Successfully compiled with GCC and verified.
+ * ==============================================================================
+ */
