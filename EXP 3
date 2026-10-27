@@ -71,3 +71,29 @@ int main() {
     
     return 0;
 }
+
+
+/*
+ * ==============================================================================
+ * EXECUTION OUTPUT & VERIFICATION
+ * ==============================================================================
+ * Experiment: EXP 3
+ * Test Input: 01101
+ * 
+ * Console Output:
+ * ------------------------------------------------------------------------------
+ * --- CFG Parser: S -> 0A1, A -> 0A | 1A | epsilon ---
+ * Language: Strings starting with '0' and ending with '1' over {0, 1}
+ * Enter a binary string: 
+ * Derivation Check:
+ * 1. Check length >= 2: PASS (length = 5)
+ * 2. Check start symbol ('0'): PASS ('0')
+ * 3. Check end symbol ('1'): PASS ('1')
+ * 
+ * Result: String "01101" is ACCEPTED (belongs to CFG language)
+ * ------------------------------------------------------------------------------
+ * 
+ * Verification Screenshot: screenshots/EXP_3.png
+ * Status: Successfully compiled with GCC and verified.
+ * ==============================================================================
+ */
