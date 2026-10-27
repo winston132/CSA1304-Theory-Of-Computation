@@ -82,3 +82,31 @@ int main() {
     
     return 0;
 }
+
+
+/*
+ * ==============================================================================
+ * EXECUTION OUTPUT & VERIFICATION
+ * ==============================================================================
+ * Experiment: EXP 12
+ * Test Input: bac
+ * 
+ * Console Output:
+ * ------------------------------------------------------------------------------
+ * --- DFA Simulator for L = {"a", "ac", "bac"} ---
+ * Alphabet: {a, b, c}
+ * Enter input string: 
+ * State Transition Trace:
+ *   Start at state q0
+ *   Î´(q0, 'b') -> q3
+ *   Î´(q3, 'a') -> q4
+ *   Î´(q4, 'c') -> q2
+ * 
+ * Ended in accepting state q2.
+ * Result: ACCEPTED
+ * ------------------------------------------------------------------------------
+ * 
+ * Verification Screenshot: screenshots/EXP_12.png
+ * Status: Successfully compiled with GCC and verified.
+ * ==============================================================================
+ */
