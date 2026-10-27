@@ -132,3 +132,32 @@ int main() {
     
     return 0;
 }
+
+
+/*
+ * ==============================================================================
+ * EXECUTION OUTPUT & VERIFICATION
+ * ==============================================================================
+ * Experiment: EXP 14
+ * Test Input: abb
+ * 
+ * Console Output:
+ * ------------------------------------------------------------------------------
+ * --- Pushdown Automata (PDA) Simulator for L = { a^n b^(2n) | n >= 1 } ---
+ * Examples: abb, aabbbb, aaabbbbbb
+ * Enter string: 
+ * Execution Trace:
+ * Initial Config: State q0, Stack: [bottom] Z [top]
+ * ----------------------------------------------------
+ * Read 'a': Push TWO 'A's onto stack -> State q0 | Stack: [bottom] Z A A [top]
+ * Read 'b': Pop ONE 'A' from stack  -> State q1 | Stack: [bottom] Z A [top]
+ * Read 'b': Pop ONE 'A' from stack  -> State q1 | Stack: [bottom] Z [top]
+ * End of input: Îµ-transition on Z0 -> State q2 (Final State)
+ * ----------------------------------------------------
+ * Result: String "abb" is ACCEPTED by the PDA!
+ * ------------------------------------------------------------------------------
+ * 
+ * Verification Screenshot: screenshots/EXP_14.png
+ * Status: Successfully compiled with GCC and verified.
+ * ==============================================================================
+ */
