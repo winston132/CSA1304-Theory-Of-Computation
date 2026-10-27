@@ -61,3 +61,32 @@ int main() {
     
     return 0;
 }
+
+
+/*
+ * ==============================================================================
+ * EXECUTION OUTPUT & VERIFICATION
+ * ==============================================================================
+ * Experiment: EXP 40
+ * Test Input: bbbb
+ * 
+ * Console Output:
+ * ------------------------------------------------------------------------------
+ * --- NFA Simulator: Accept Any Number of 'b's (L = b*) ---
+ * Alphabet: {a, b}
+ * Enter string over {a, b} (or 'E' for epsilon/empty string): 
+ * Execution Trace:
+ *   Initial Active State: { q0 } (q0 is ACCEPTING)
+ *   Read 'b': Î´({q0}, 'b') -> { q0 }
+ *   Read 'b': Î´({q0}, 'b') -> { q0 }
+ *   Read 'b': Î´({q0}, 'b') -> { q0 }
+ *   Read 'b': Î´({q0}, 'b') -> { q0 }
+ * 
+ * Final Active State Set: { q0 }
+ * Result: String "bbbb" is ACCEPTED (Valid string in b*)
+ * ------------------------------------------------------------------------------
+ * 
+ * Verification Screenshot: screenshots/EXP_40.png
+ * Status: Successfully compiled with GCC and verified.
+ * ==============================================================================
+ */
