@@ -108,3 +108,33 @@ int main() {
     
     return 0;
 }
+
+
+/*
+ * ==============================================================================
+ * EXECUTION OUTPUT & VERIFICATION
+ * ==============================================================================
+ * Experiment: EXP 36
+ * Test Input: (Hardcoded / Program Default Input)
+ * 
+ * Console Output:
+ * ------------------------------------------------------------------------------
+ * --- NFA Simulator: Strings Starting with 'a' and Ending with 'b' ---
+ * Target Test String: W = "abaab"
+ * Enter string over {a, b} (press Enter for default "abaab"): 
+ * Execution Trace for W = "abaab":
+ *   Initial Active States: { q0 }
+ *   Read 'a': Active states -> { q1 }
+ *   Read 'b': Active states -> { q1, q2 }
+ *   Read 'a': Active states -> { q1 }
+ *   Read 'a': Active states -> { q1 }
+ *   Read 'b': Active states -> { q1, q2 }
+ * 
+ * Final Active States: { q1, q2 }
+ * Result: String W = "abaab" is ACCEPTED (Starts with 'a' and ends with 'b')
+ * ------------------------------------------------------------------------------
+ * 
+ * Verification Screenshot: screenshots/EXP_36.png
+ * Status: Successfully compiled with GCC and verified.
+ * ==============================================================================
+ */
